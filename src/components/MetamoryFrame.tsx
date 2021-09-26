@@ -13,8 +13,8 @@ type MetamoryData = {
   publishedVersionId?: string
   load: (contentId: string) => void
   // save: (content: string) => void
-  // publish: (version: string, from: string) => void  // from is the ISO date/time instant
-  changeVersion: (version: string) => void
+  publish: (versionId: string, from: string) => void // from is the ISO date/time instant
+  changeVersion: (versionId: string) => void
 }
 
 type Version = {
@@ -73,7 +73,7 @@ export const MetamoryFrame = ({
       .then((data) => {
         setVersions(data.versions)
         setPublishedVersionId(data.publishedVersionId)
-        setCurrentVersionId(data.versions[0]?.versionId)
+        setCurrentVersionId(data.publishedVersionId ?? data.versions[0]?.versionId)
       })
   }, [serviceBaseUrl, siteName, contentId])
 
@@ -88,9 +88,36 @@ export const MetamoryFrame = ({
       setContentId(contentId)
     },
     // save: (content: string) => {}
-    // publish: (version: string, from: string) => {}  // from is the ISO date/time instant
-    changeVersion: (version: string) => {
-      setCurrentVersionId(version)
+    publish: (versionId: string, from: string /* ISO 8601 date/time */) => {
+      const body = {
+        status: 'Published',
+        // startDate: "",	// ISO 8601 date/time for publication
+        // responsible: ""
+      }
+      const headers = {
+        'Content-Type': 'application/json',
+      }
+      fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}/${versionId}/status`, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers,
+        body: JSON.stringify(body),
+      })
+        .then(response => response.json())
+        .then(data => {
+          setPublishedVersionId(data.publishedVersionId)
+        })
+      // fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}/versions`)
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     setVersions(data.versions)
+      //     setPublishedVersionId(data.publishedVersionId)
+      //     setCurrentVersionId(data.versions[0]?.versionId)
+      //   })
+    },
+    changeVersion: (versionId: string) => {
+      setCurrentVersionId(versionId)
     },
   }
 

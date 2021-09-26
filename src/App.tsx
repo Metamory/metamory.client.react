@@ -4,6 +4,7 @@ import { MetamoryFrame } from './components/MetamoryFrame'
 import { VersionSelector } from './components/VersionSelector'
 import { ContentIdSelector } from './components/ContentIdSelector'
 import { ContentEditor } from './components/ContentEditor'
+import { PublishButton } from './components/PublishButton'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       >
         <ContentIdSelector />
         <VersionSelector />
+        <PublishButton />
         <ContentEditor />
       </MetamoryFrame>
     </div>

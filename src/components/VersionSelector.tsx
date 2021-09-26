@@ -3,20 +3,24 @@ import { MetamoryContext } from './MetamoryFrame'
 
 export const VersionSelector = () => {
   const metamoryContext = useContext(MetamoryContext)!
+  const [currentVersionId, setCurrentVersionId] = React.useState<
+    string | undefined
+  >(metamoryContext.currentVersionId)
 
   return (
     <div>
       Available versions:
       <select
-        onChange={(event) =>
+        onChange={(event) => {
+          setCurrentVersionId(event.currentTarget.value)
           metamoryContext.changeVersion(event.currentTarget.value)
-        }
+        }}
         value={metamoryContext.currentVersionId}
       >
         {metamoryContext.versions.map((version, ix) => (
           <option key={ix} value={version.versionId}>
-            {version.versionId === metamoryContext.publishedVersionId && "* "}
-            {version.versionId} ({version.author})
+            {version.versionId === metamoryContext.publishedVersionId && '* '}
+            {version.label !== "" ? version.label : "(No label)"} {version.versionId} ({version.author})
           </option>
         ))}
       </select>
