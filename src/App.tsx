@@ -1,26 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './App.css'
+import { MetamoryFrame } from './components/MetamoryFrame'
+import { VersionSelector } from './components/VersionSelector'
+import { ContentIdSelector } from './components/ContentIdSelector'
+import { ContentEditor } from './components/ContentEditor'
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <MetamoryFrame
+        serviceBaseUrl="http://localhost:5000"
+        siteName="first-site"
+        contentId="frontpage"
+        contentType="text/plain"
+      >
+        <ContentIdSelector />
+        <VersionSelector />
+        <ContentEditor />
+      </MetamoryFrame>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
