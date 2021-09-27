@@ -1,15 +1,22 @@
-import React, { useContext } from 'react'
-import { MetamoryContext } from './MetamoryFrame'
+import React, { useContext } from "react"
+import { MetamoryContext } from "./Metamory"
 
 export const ContentEditor = () => {
-  const metamoryContext = useContext(MetamoryContext)!
-  return (
-    <div>
-      Content type: {metamoryContext.contentType}
-      <br />
-      Content
-      <br />
-      <textarea value={metamoryContext.content}></textarea>
-    </div>
-  )
+	const metamoryContext = useContext(MetamoryContext)!
+
+	return (
+		<div>
+			Content type: {metamoryContext.contentType}
+			<br />
+			Content
+			<br />
+			<textarea
+				value={metamoryContext.content}
+				style={{ width: "calc(100% - .5em)" }}
+				onChange={(event) => {
+					metamoryContext.changeContent(event.currentTarget.value)
+				}}
+			></textarea>
+		</div>
+	)
 }
