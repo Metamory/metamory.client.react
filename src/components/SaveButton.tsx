@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { MetamoryContext } from "./Metamory"
+import { DRAFT, MetamoryContext } from "./Metamory"
 
 export const SaveButton = () => {
 	const metamoryContext = useContext(MetamoryContext)
@@ -7,12 +7,17 @@ export const SaveButton = () => {
 
 	return (
 		<div>
-			Label <input type="text" value={label} onChange={(event) => setLabel(event.currentTarget.value)} />
+			Label{" "}
+			<input
+				type="text"
+				value={label}
+				onChange={(event) => setLabel(event.currentTarget.value)}
+				disabled={metamoryContext.currentVersionId !== DRAFT}
+			/>
 			<br />
 			<button
-				onClick={(event) => {
-					metamoryContext.save(metamoryContext.content, label)
-				}}
+				onClick={(event) => metamoryContext.save(metamoryContext.content, label)}
+				disabled={metamoryContext.currentVersionId !== DRAFT}
 			>
 				Save
 			</button>

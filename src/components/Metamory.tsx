@@ -3,7 +3,7 @@ import React, { useEffect } from "react"
 type Version = {
 	author: string
 	label: string
-	previousVersionId: string
+	previousVersionId?: string
 	timestamp: string
 	versionId: string
 }
@@ -23,6 +23,7 @@ const defaultMetamoryContext = {
 }
 
 export const MetamoryContext = React.createContext(defaultMetamoryContext)
+export const DRAFT = "DRAFT"
 
 type MetamoryProps = {
 	serviceBaseUrl: string
@@ -41,11 +42,16 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 	const [currentVersionId, setCurrentVersionId] = React.useState<string | undefined>(undefined)
 	const [versions, setVersions] = React.useState<Version[]>([])
 	const [publishedVersionId, setPublishedVersionId] = React.useState<string | undefined>(undefined)
-	const [previousVersionId, setPreviousVersionId] = React.useState<string | undefined>(undefined)
+	const [draftVersion, setDraftVersion] = React.useState<Version | undefined>(undefined)
 
 	useEffect(() => {
 		// load content
 		if (currentVersionId === undefined) return
+
+		if (currentVersionId === DRAFT) {
+			setContent(draftContent)
+			return
+		}
 
 		fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}/${currentVersionId}`)
 			.then((response) => {
@@ -55,7 +61,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			.then((data) => {
 				setContent(data)
 			})
-	}, [serviceBaseUrl, siteName, contentId, currentVersionId])
+	}, [serviceBaseUrl, siteName, contentId, currentVersionId, draftContent])
 
 	useEffect(() => {
 		// load versions
@@ -74,10 +80,11 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 
 	const save = (content: string, label: string) => {
 		const body = {
-			previousVersionId,
+			previousVersionId: draftVersion!.previousVersionId,
 			content,
 			label,
-			contentType
+			contentType,
+			author: currentUser
 		}
 		fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}`, {
 			method: "POST",
@@ -92,7 +99,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			.then((newlyCreatedVersion) => {
 				setVersions([...versions, newlyCreatedVersion])
 				setCurrentVersionId(newlyCreatedVersion.versionId)
-				setDraftContent(undefined)
+				setDraftVersion(undefined)
 			})
 	}
 
@@ -100,7 +107,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		const body = {
 			status: "Published",
 			startDate, // ISO 8601 date/time for publication
-			responsible: currentUser //TODO: username or author
+			responsible: currentUser
 		}
 		fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}/${versionId}/status`, {
 			method: "POST",
@@ -122,15 +129,26 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 	}
 
 	const changeContent = (content: string) => {
-		setContent(content)
-		setCurrentVersionId("DRAFT")
+		setDraftContent(content)
+
+		if (currentVersionId !== DRAFT) {
+			const draftVersion = {
+				author: currentUser,
+				label: "",
+				previousVersionId: currentVersionId,
+				timestamp: "",
+				versionId: DRAFT
+			}
+			setDraftVersion(draftVersion)
+			setCurrentVersionId(draftVersion.versionId)
+		}
 	}
 
 	const context = {
 		contentId,
 		contentType,
-		content,
-		versions,
+		content: currentVersionId === DRAFT ? draftContent : content,
+		versions: draftVersion !== undefined ? [...versions, draftVersion] : versions,
 		currentVersionId,
 		publishedVersionId,
 		load,

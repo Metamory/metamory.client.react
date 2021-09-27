@@ -3,14 +3,12 @@ import { MetamoryContext } from "./Metamory"
 
 export const VersionSelector = () => {
 	const metamoryContext = useContext(MetamoryContext)
-	const [currentVersionId, setCurrentVersionId] = React.useState<string | undefined>(metamoryContext.currentVersionId)
 
 	return (
 		<div>
 			Available versions:
 			<select
 				onChange={(event) => {
-					setCurrentVersionId(event.currentTarget.value)
 					metamoryContext.changeVersion(event.currentTarget.value)
 				}}
 				value={metamoryContext.currentVersionId}
@@ -18,7 +16,7 @@ export const VersionSelector = () => {
 				{metamoryContext.versions.map((version, ix) => (
 					<option key={ix} value={version.versionId}>
 						{version.versionId === metamoryContext.publishedVersionId && "* "}
-						{version.label !== "" ? version.label : "(No label)"} {version.versionId} ({version.author})
+						{version.versionId} {version.label !== "" ? version.label : ""} ({version.author})
 					</option>
 				))}
 			</select>

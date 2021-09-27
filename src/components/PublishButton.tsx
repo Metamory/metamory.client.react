@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { MetamoryContext } from "./Metamory"
+import { DRAFT, MetamoryContext } from "./Metamory"
 
 export const PublishButton = () => {
 	const metamoryContext = useContext(MetamoryContext)
@@ -8,7 +8,7 @@ export const PublishButton = () => {
 		<div>
 			Publish from: <input /*type="datetime-local"*/ value="--not implemented yet--" disabled={true} />
 			<button
-				disabled={metamoryContext.currentVersionId === undefined}
+				disabled={metamoryContext.currentVersionId === DRAFT}
 				onClick={(event) =>
 					metamoryContext.publish(metamoryContext.currentVersionId!, new Date().toISOString())
 				}
