@@ -2,7 +2,7 @@ import React, { useContext } from "react"
 import { MetamoryContext } from "./Metamory"
 
 export const VersionSelector = () => {
-	const metamoryContext = useContext(MetamoryContext)!
+	const metamoryContext = useContext(MetamoryContext)
 	const [currentVersionId, setCurrentVersionId] = React.useState<string | undefined>(metamoryContext.currentVersionId)
 
 	return (

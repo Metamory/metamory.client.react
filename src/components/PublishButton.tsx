@@ -2,7 +2,7 @@ import React, { useContext } from "react"
 import { MetamoryContext } from "./Metamory"
 
 export const PublishButton = () => {
-	const metamoryContext = useContext(MetamoryContext)!
+	const metamoryContext = useContext(MetamoryContext)
 
 	return (
 		<div>

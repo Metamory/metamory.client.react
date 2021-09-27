@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react"
 import { MetamoryContext } from "./Metamory"
 
 export const SaveButton = () => {
-	const metamoryContext = useContext(MetamoryContext)!
+	const metamoryContext = useContext(MetamoryContext)
 	const [label, setLabel] = useState<string>("")
 
 	return (
