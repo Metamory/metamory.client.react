@@ -6,7 +6,7 @@ export const SaveButton = () => {
 	const [label, setLabel] = useState<string>("")
 
 	return (
-		<div>
+		<div className="frame">
 			Label{" "}
 			<input
 				type="text"

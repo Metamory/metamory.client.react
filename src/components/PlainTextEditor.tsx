@@ -1,18 +1,15 @@
 import React, { useContext } from "react"
+import "./PlainTextEditor.css"
 import { MetamoryContext } from "./Metamory"
 
 export const PlainTextEditor = () => {
 	const metamoryContext = useContext(MetamoryContext)
 
 	return (
-		<div>
-			Content type: {metamoryContext.contentType}
-			<br />
-			Content
-			<br />
+		<div className="frame PlainTextEditor">
+			<div className="top">Content type: {metamoryContext.contentType}</div>
 			<textarea
 				value={metamoryContext.content}
-				style={{ width: "calc(100% - .5em)" }}
 				onChange={(event) => {
 					metamoryContext.changeContent(event.currentTarget.value)
 				}}
@@ -20,3 +17,5 @@ export const PlainTextEditor = () => {
 		</div>
 	)
 }
+
+PlainTextEditor.mimeType = "text/plain"

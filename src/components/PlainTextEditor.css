@@ -1,38 +1,31 @@
 
-div.MarkdownEditor {
+div.PlainTextEditor {
 	padding: 0;
 
 	display: grid;
 	grid-template-rows: auto;
 	grid-template-columns: auto;
-	grid-template-areas: "top top" "left right";
+	grid-template-areas: "top" "bottom";
 }
 
-.MarkdownEditor > .top{
+.PlainTextEditor > .top{
 	grid-area: top;
 }
 
-.MarkdownEditor > .left{
-	grid-area: left;
+.PlainTextEditor > .bottom{
+	grid-area: bottom;
 }
 
-.MarkdownEditor > .right{
-	grid-area: right;
-}
-
-.MarkdownEditor div.top{
+.PlainTextEditor div.top{
 	padding: .5em;
 	border-bottom: 1px solid lightgrey;
 }
 
-.MarkdownEditor div.right {
-	background-color: lightgray;
-}
-
-textarea {
+.PlainTextEditor textarea {
 	font-family: 'Courier New', Courier, monospace;
 	font-size: 1em;
 	padding: 0;
 	border: none;
 	resize: vertical;
 }
+

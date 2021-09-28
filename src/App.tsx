@@ -7,6 +7,8 @@ import { PlainTextEditor } from "./components/PlainTextEditor"
 import { PublishButton } from "./components/PublishButton"
 import { SaveButton } from "./components/SaveButton"
 import { MarkdownEditor } from "./components/MarkdownEditor"
+import { ContentTypeSelector } from "./components/ContentTypeSelector"
+import { AutoMimeTypeEditor } from "./components/AutoMimeTypeEditor"
 
 function App() {
 	const currentUser = "Anonymous"	//TODO: Current users full name or username
@@ -22,8 +24,10 @@ function App() {
 				<ContentIdSelector />
 				<VersionSelector />
 				<PublishButton />
-				<PlainTextEditor />
-				<MarkdownEditor />
+				<ContentTypeSelector />
+				{/* <PlainTextEditor /> */}
+				{/* <MarkdownEditor /> */}
+				<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor]} fallbackEditor={PlainTextEditor} />
 				<SaveButton />
 			</Metamory>
 		</div>

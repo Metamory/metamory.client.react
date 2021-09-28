@@ -1,11 +1,12 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { MetamoryContext } from "./Metamory"
 
 export const ContentIdSelector = () => {
 	const metamoryContext = useContext(MetamoryContext)
-	const [contentId, setContentId] = React.useState(metamoryContext.contentId)
+	const [contentId, setContentId] = useState(metamoryContext.contentId)
+
 	return (
-		<div>
+		<div className="frame">
 			ContentId <input value={contentId} onChange={(event) => setContentId(event.currentTarget.value)} />
 			<br />
 			<button onClick={(event) => metamoryContext.load(contentId)}>Load</button>

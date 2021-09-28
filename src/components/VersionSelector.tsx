@@ -5,7 +5,7 @@ export const VersionSelector = () => {
 	const metamoryContext = useContext(MetamoryContext)
 
 	return (
-		<div>
+		<div className="frame">
 			Available versions:
 			<select
 				onChange={(event) => {

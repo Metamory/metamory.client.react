@@ -5,7 +5,7 @@ export const PublishButton = () => {
 	const metamoryContext = useContext(MetamoryContext)
 
 	return (
-		<div>
+		<div className="frame">
 			Publish from: <input /*type="datetime-local"*/ value="--not implemented yet--" disabled={true} />
 			<button
 				disabled={metamoryContext.currentVersionId === DRAFT}

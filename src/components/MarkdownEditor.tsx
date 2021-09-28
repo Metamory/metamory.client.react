@@ -7,19 +7,20 @@ export const MarkdownEditor = () => {
 	const metamoryContext = useContext(MetamoryContext)
 
 	return (
-		<div className="MarkdownEditor">
-			Content type: {metamoryContext.contentType}
-			<br />
-			Content
-			<br />
+		<div className="frame MarkdownEditor">
+			<div className="top">Content type: {metamoryContext.contentType}</div>
 			<textarea
+				className="left"
 				value={metamoryContext.content}
-				style={{ width: "calc(100% - .5em)" }}
 				onChange={(event) => {
 					metamoryContext.changeContent(event.currentTarget.value)
 				}}
 			></textarea>
-			<ReactMarkdown>{metamoryContext.content}</ReactMarkdown>
+			<div className="right">
+				<ReactMarkdown>{metamoryContext.content}</ReactMarkdown>
+			</div>
 		</div>
 	)
 }
+
+MarkdownEditor.mimeType = "text/markdown"

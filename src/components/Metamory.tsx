@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
 type Version = {
 	author: string
@@ -19,7 +19,8 @@ const defaultMetamoryContext = {
 	save: (content: string, label: string) => {},
 	publish: (versionId: string, from: string) => {},
 	changeVersion: (versionId: string) => {},
-	changeContent: (content: string) => {}
+	changeContent: (content: string) => {},
+	changeContentType: (mimeType: string) => {}
 }
 
 export const MetamoryContext = React.createContext(defaultMetamoryContext)
@@ -35,14 +36,14 @@ type MetamoryProps = {
 }
 
 export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...props }: MetamoryProps) => {
-	const [contentId, setContentId] = React.useState(props.contentId)
-	const [content, setContent] = React.useState<any>(undefined)
-	const [draftContent, setDraftContent] = React.useState<any>(undefined)
-	const [contentType, setContentType] = React.useState<string | undefined>(undefined)
-	const [currentVersionId, setCurrentVersionId] = React.useState<string | undefined>(undefined)
-	const [versions, setVersions] = React.useState<Version[]>([])
-	const [publishedVersionId, setPublishedVersionId] = React.useState<string | undefined>(undefined)
-	const [draftVersion, setDraftVersion] = React.useState<Version | undefined>(undefined)
+	const [contentId, setContentId] = useState(props.contentId)
+	const [content, setContent] = useState<any>(undefined)
+	const [draftContent, setDraftContent] = useState<any>(undefined)
+	const [contentType, setContentType] = useState<string | undefined>(undefined)
+	const [currentVersionId, setCurrentVersionId] = useState<string | undefined>(undefined)
+	const [versions, setVersions] = useState<Version[]>([])
+	const [publishedVersionId, setPublishedVersionId] = useState<string | undefined>(undefined)
+	const [draftVersion, setDraftVersion] = useState<Version | undefined>(undefined)
 
 	useEffect(() => {
 		// load content
@@ -76,6 +77,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 
 	const load = (contentId: string) => {
 		setContentId(contentId)
+		setContent("")
 	}
 
 	const save = (content: string, label: string) => {
@@ -144,6 +146,10 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		}
 	}
 
+	const changeContentType = (mimeType: string) => {
+		setContentType(mimeType)
+	}
+
 	const context = {
 		contentId,
 		contentType,
@@ -155,7 +161,8 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		save,
 		publish,
 		changeVersion,
-		changeContent
+		changeContent,
+		changeContentType
 	}
 
 	return <MetamoryContext.Provider value={context}>{children}</MetamoryContext.Provider>
