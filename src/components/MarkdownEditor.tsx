@@ -1,11 +1,13 @@
 import React, { useContext } from "react"
+import "./MarkdownEditor.css"
+import ReactMarkdown from "react-markdown"
 import { MetamoryContext } from "./Metamory"
 
-export const ContentEditor = () => {
+export const MarkdownEditor = () => {
 	const metamoryContext = useContext(MetamoryContext)
 
 	return (
-		<div>
+		<div className="MarkdownEditor">
 			Content type: {metamoryContext.contentType}
 			<br />
 			Content
@@ -17,6 +19,7 @@ export const ContentEditor = () => {
 					metamoryContext.changeContent(event.currentTarget.value)
 				}}
 			></textarea>
+			<ReactMarkdown>{metamoryContext.content}</ReactMarkdown>
 		</div>
 	)
 }

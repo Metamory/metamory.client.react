@@ -3,9 +3,10 @@ import "./App.css"
 import { Metamory } from "./components/Metamory"
 import { VersionSelector } from "./components/VersionSelector"
 import { ContentIdSelector } from "./components/ContentIdSelector"
-import { ContentEditor } from "./components/ContentEditor"
+import { PlainTextEditor } from "./components/PlainTextEditor"
 import { PublishButton } from "./components/PublishButton"
 import { SaveButton } from "./components/SaveButton"
+import { MarkdownEditor } from "./components/MarkdownEditor"
 
 function App() {
 	const currentUser = "Anonymous"	//TODO: Current users full name or username
@@ -21,7 +22,8 @@ function App() {
 				<ContentIdSelector />
 				<VersionSelector />
 				<PublishButton />
-				<ContentEditor />
+				<PlainTextEditor />
+				<MarkdownEditor />
 				<SaveButton />
 			</Metamory>
 		</div>
