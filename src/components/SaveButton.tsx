@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react"
-import { DRAFT, MetamoryContext } from "./Metamory"
+import { MetamoryContext } from "./Metamory"
+import { DRAFT } from "./MetamoryReducer"
 
 export const SaveButton = () => {
 	const metamoryContext = useContext(MetamoryContext)

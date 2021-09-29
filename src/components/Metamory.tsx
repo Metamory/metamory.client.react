@@ -1,12 +1,5 @@
-import React, { useEffect, useState } from "react"
-
-type Version = {
-	author: string
-	label: string
-	previousVersionId?: string
-	timestamp: string
-	versionId: string
-}
+import React, { useEffect, useReducer } from "react"
+import { reducer, initialState, DRAFT, Version } from "./MetamoryReducer"
 
 const defaultMetamoryContext = {
 	contentId: "",
@@ -24,71 +17,60 @@ const defaultMetamoryContext = {
 }
 
 export const MetamoryContext = React.createContext(defaultMetamoryContext)
-export const DRAFT = "DRAFT"
 
 type MetamoryProps = {
 	serviceBaseUrl: string
 	siteName: string
 	contentId: string
-	contentType: string
 	currentUser: string
 	children?: React.ReactNode
 }
 
 export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...props }: MetamoryProps) => {
-	const [contentId, setContentId] = useState(props.contentId)
-	const [content, setContent] = useState<any>(undefined)
-	const [draftContent, setDraftContent] = useState<any>(undefined)
-	const [contentType, setContentType] = useState<string | undefined>(undefined)
-	const [currentVersionId, setCurrentVersionId] = useState<string | undefined>(undefined)
-	const [versions, setVersions] = useState<Version[]>([])
-	const [publishedVersionId, setPublishedVersionId] = useState<string | undefined>(undefined)
-	const [draftVersion, setDraftVersion] = useState<Version | undefined>(undefined)
+	const [state, dispatch] = useReducer(reducer, { ...initialState, contentId: props.contentId })
 
 	useEffect(() => {
 		// load content
-		if (currentVersionId === undefined) return
-
-		if (currentVersionId === DRAFT) {
-			setContent(draftContent)
+		if (state.currentVersionId === undefined || state.currentVersionId === DRAFT) {
+			dispatch({ type: "LOADED" , content: state.draft?.content, contentType: state.draft?.contentType })
 			return
 		}
 
-		fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}/${currentVersionId}`)
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`)
 			.then((response) => {
-				setContentType(response.headers.get("Content-Type")!)
-				return response.text()
+				return Promise.all([response.text(), response.headers.get("Content-Type")!])
 			})
-			.then((data) => {
-				setContent(data)
+			.then(([content, contentType]) => {
+				dispatch({ type: "LOADED", content, contentType })
 			})
-	}, [serviceBaseUrl, siteName, contentId, currentVersionId, draftContent])
+	}, [serviceBaseUrl, siteName, state.contentId, state.currentVersionId, state.draft?.content])
 
 	useEffect(() => {
 		// load versions
-		fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}/versions`)
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions`)
 			.then((response) => response.json())
 			.then((data) => {
-				setVersions(data.versions)
-				setPublishedVersionId(data.publishedVersionId)
-				setCurrentVersionId(data.publishedVersionId ?? data.versions[0]?.versionId)
+				dispatch({
+					type: "VERSIONS_LOADED",
+					versions: data.versions,
+					publishedVersionId: data.publishedVersionId
+				})
 			})
-	}, [serviceBaseUrl, siteName, contentId])
+	}, [serviceBaseUrl, siteName, state.contentId])
 
 	const load = (contentId: string) => {
-		setContentId(contentId)
-		setContent("")
+		dispatch({ type: "LOADING", contentId })
 	}
 
 	const save = (content: string, label: string) => {
 		const body = {
-			previousVersionId: draftVersion!.previousVersionId,
+			previousVersionId: state.draft?.version!.previousVersionId,
 			content,
 			label,
-			contentType,
+			contentType: state.draft?.contentType,
 			author: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}`, {
 			method: "POST",
 			mode: "cors",
 			cache: "no-cache",
@@ -99,9 +81,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		})
 			.then((response) => response.json())
 			.then((newlyCreatedVersion) => {
-				setVersions([...versions, newlyCreatedVersion])
-				setCurrentVersionId(newlyCreatedVersion.versionId)
-				setDraftVersion(undefined)
+				dispatch({ type: "SAVED", newlyCreatedVersion })
 			})
 	}
 
@@ -111,7 +91,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			startDate, // ISO 8601 date/time for publication
 			responsible: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${contentId}/${versionId}/status`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status`, {
 			method: "POST",
 			mode: "cors",
 			cache: "no-cache",
@@ -122,41 +102,35 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				setPublishedVersionId(data.publishedVersionId)
+				dispatch({ type: "PUBLISHED", publishedVersionId: data.publishedVersionId })
 			})
 	}
 
 	const changeVersion = (versionId: string) => {
-		setCurrentVersionId(versionId)
+		dispatch({ type: "CURRENT_VERSION_CHANGED", currentVersionId: versionId })
 	}
 
 	const changeContent = (content: string) => {
-		setDraftContent(content)
-
-		if (currentVersionId !== DRAFT) {
-			const draftVersion = {
-				author: currentUser,
-				label: "",
-				previousVersionId: currentVersionId,
-				timestamp: "",
-				versionId: DRAFT
-			}
-			setDraftVersion(draftVersion)
-			setCurrentVersionId(draftVersion.versionId)
+		if (state.currentVersionId !== DRAFT) {
+			dispatch({ type: "ENTER_DRAFT_MODE", currentUser })
 		}
+		dispatch({ type: "DRAFT_CONTENT_CHANGED", draftContent: content })
 	}
 
 	const changeContentType = (mimeType: string) => {
-		setContentType(mimeType)
+		if (state.currentVersionId !== DRAFT) {
+			dispatch({ type: "ENTER_DRAFT_MODE", currentUser })
+		}
+		dispatch({ type: "CONTENT_TYPE_CHANGED", contentType: mimeType })
 	}
 
 	const context = {
-		contentId,
-		contentType,
-		content: currentVersionId === DRAFT ? draftContent : content,
-		versions: draftVersion !== undefined ? [...versions, draftVersion] : versions,
-		currentVersionId,
-		publishedVersionId,
+		contentId: state.contentId,
+		contentType: state.currentVersionId === DRAFT ? state.draft?.contentType : state.contentType,
+		content: state.currentVersionId === DRAFT ? state.draft?.content : state.content,
+		versions: state.draft !== undefined ? [...state.versions, state.draft.version] : state.versions,
+		currentVersionId: state.currentVersionId,
+		publishedVersionId: state.publishedVersionId,
 		load,
 		save,
 		publish,

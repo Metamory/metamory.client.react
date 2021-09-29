@@ -18,7 +18,6 @@ function App() {
 				serviceBaseUrl="http://localhost:5000"
 				siteName="first-site"
 				contentId="frontpage"
-				contentType="text/plain"
 				currentUser={currentUser}
 			>
 				<ContentIdSelector />

@@ -1,5 +1,6 @@
 import React, { useContext } from "react"
-import { DRAFT, MetamoryContext } from "./Metamory"
+import { MetamoryContext } from "./Metamory"
+import { DRAFT } from "./MetamoryReducer"
 
 export const PublishButton = () => {
 	const metamoryContext = useContext(MetamoryContext)
