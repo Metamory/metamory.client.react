@@ -8,8 +8,12 @@ export const ContentIdSelector = () => {
 	return (
 		<div className="frame">
 			ContentId <input value={contentId} onChange={(event) => setContentId(event.currentTarget.value)} />
-			<br />
-			<button onClick={(event) => metamoryContext.load(contentId)}>Load</button>
+			<button
+				onClick={(event) => metamoryContext.load(contentId)}
+				disabled={contentId === metamoryContext.contentId}
+			>
+				Load
+			</button>
 		</div>
 	)
 }

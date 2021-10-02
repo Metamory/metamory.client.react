@@ -14,8 +14,8 @@ type State = {
 
 export const initialState: State = {
 	contentId: "",
-	content: "",
-	contentType: undefined,
+	content: undefined,
+	contentType: "text/plain",
 	currentVersionId: undefined,
 	versions: [],
 	publishedVersionId: undefined,
@@ -54,6 +54,7 @@ type Action =
 	| DRAFT_CONTENT_CHANGED
 
 export function reducer(state: State, action: Action): State {
+	// console.log("***", action)
 	switch (action.type) {
 		case "VERSIONS_LOADED":
 			const newestVersionId =
@@ -67,10 +68,10 @@ export function reducer(state: State, action: Action): State {
 
 		case "LOADING":
 			return {
-				...state,
+				...initialState,
 				contentId: action.contentId,
-				content: undefined,
-				contentType: undefined
+				// content: undefined,
+				// contentType: undefined
 			}
 
 		case "LOADED":

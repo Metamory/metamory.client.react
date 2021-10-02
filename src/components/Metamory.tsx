@@ -32,7 +32,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 	useEffect(() => {
 		// load content
 		if (state.currentVersionId === undefined || state.currentVersionId === DRAFT) {
-			dispatch({ type: "LOADED" , content: state.draft?.content, contentType: state.draft?.contentType })
+			dispatch({ type: "LOADED", content: state.draft?.content, contentType: state.draft?.contentType })
 			return
 		}
 
@@ -43,7 +43,14 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			.then(([content, contentType]) => {
 				dispatch({ type: "LOADED", content, contentType })
 			})
-	}, [serviceBaseUrl, siteName, state.contentId, state.currentVersionId, state.draft?.content])
+	}, [
+		serviceBaseUrl,
+		siteName,
+		state.contentId,
+		state.currentVersionId,
+		state.draft?.content,
+		state.draft?.contentType
+	])
 
 	useEffect(() => {
 		// load versions
