@@ -9,15 +9,16 @@ import { SaveButton } from "./components/SaveButton"
 import { MarkdownEditor } from "./components/MarkdownEditor"
 import { ContentTypeSelector } from "./components/ContentTypeSelector"
 import { AutoMimeTypeEditor } from "./components/AutoMimeTypeEditor"
+import { AgendaEditor } from "./components/AgendaEditor/AgendaEditor"
 
 function App() {
 	const currentUser = "Anonymous"	//TODO: Current users full name or username
 	return (
 		<div className="App">
 			<Metamory
-				serviceBaseUrl="http://localhost:5000"
+				serviceBaseUrl=""
 				siteName="first-site"
-				contentId="frontpage"
+				contentId="agenda"
 				currentUser={currentUser}
 			>
 				<ContentIdSelector />
@@ -26,7 +27,7 @@ function App() {
 				<ContentTypeSelector />
 				{/* <PlainTextEditor /> */}
 				{/* <MarkdownEditor /> */}
-				<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor]} fallbackEditor={PlainTextEditor} />
+				<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor]} fallbackEditor={PlainTextEditor} />
 				<SaveButton />
 			</Metamory>
 		</div>

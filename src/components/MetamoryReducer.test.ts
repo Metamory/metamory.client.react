@@ -3,7 +3,7 @@ import { reducer, initialState, DRAFT } from "./MetamoryReducer"
 describe("from initialState", () => {
 	describe("VERSIONS_LOADED", () => {
 		test("for a non-existing document (ie. no versions yet)", () => {
-			const versions = []
+			const versions : any[] = []
 			const publishedVersionId = undefined
 
 			const state = reducer(initialState, { type: "VERSIONS_LOADED", versions, publishedVersionId })

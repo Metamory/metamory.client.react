@@ -1,0 +1,267 @@
+div.AgendaEditor {
+	padding: 0;
+
+	/* display: grid; */
+	grid-template-rows: auto;
+	grid-template-columns: auto;
+	grid-template-areas: "top" "bottom";
+}
+
+.AgendaEditor>.top {
+	grid-area: top;
+}
+
+.AgendaEditor>.bottom {
+	grid-area: bottom;
+}
+
+.AgendaEditor div.top {
+	padding: .5em;
+	border-bottom: 1px solid lightgrey;
+}
+
+.AgendaEditor textarea {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 1em;
+	padding: 0;
+	border: none;
+	resize: vertical;
+}
+
+
+
+/* 
+.table{
+	display: table;
+	border-collapse: collapse;
+}
+
+.table .tr{
+	display: table-row;
+}
+.table .td{
+	display: table-cell
+}
+
+.table > .tbody .td{
+	border: thin solid lightgrey;
+}
+ */
+
+
+
+
+.AgendaEditor div {
+	padding: 0;
+	margin: 0;
+}
+
+.AgendaEditor input {
+	font-size: 1em;
+	background-color: rgba(0%, 0%, 0%, .03);
+	border: none;
+	border-bottom: thin solid rgba(0%, 0%, 0%, .1);
+}
+
+.AgendaEditor [draggable] {
+	cursor: default;
+}
+.AgendaEditor .dropArea {
+	background-color: aliceblue;
+}
+
+.tags>.tag {
+	color: white;
+	background-color: darkgray;
+	font-size: .7em;
+	padding: .1em .8em;
+	text-transform: uppercase;
+	border-radius: 2px;
+}
+
+.tags>.tag+.tag {
+	margin-left: .5em;
+}
+
+
+.AgendaEditor th .icons,
+.AgendaEditor td .icons {
+	position: absolute;
+	top: 0;
+	right: -22px;
+	width: 22;
+	height: 100%;
+	text-align: center;
+	font-weight: bold;
+	cursor: pointer;
+	color: transparent;
+	background-color: rgba(0%, 0%, 0%, .1);
+	transition: .5s;
+}
+
+.AgendaEditor th:hover .icons,
+.AgendaEditor td:hover .icons {
+	color: black;
+	right: 0;
+	transition: .2s;
+}
+
+.AgendaEditor th button,
+.AgendaEditor td button {
+	/* padding: none; */
+	border: none;
+	/* margin: none; */
+	text-align: center;
+	font-size: 1em;
+	font-weight: bold;
+	background-color: transparent;
+}
+
+.AgendaEditor table {
+	overflow: hidden;
+	border-collapse: collapse;
+	margin-bottom: .5em;
+	width: 100%;
+}
+
+.AgendaEditor thead th:first-child,
+.AgendaEditor thead th:last-child {
+	width: 8em;
+	min-width: 8em;
+}
+
+.AgendaEditor td {
+	position: relative;
+	border: thin solid lightgray;
+	background-color: white;
+	padding: 4px;
+	height: 58px;
+}
+
+.AgendaEditor th {
+	position: relative;
+	border-bottom: thin solid lightgray;
+	background-color: white;
+}
+
+.AgendaEditor tfoot th {
+	border-bottom: none;
+}
+
+.AgendaEditor th .location input {
+	text-align: center;
+}
+
+.AgendaEditor th .duration input {
+	text-align: center;
+}
+
+.AgendaEditor tr.break td input {
+	margin: 0 auto;
+	display: block;
+	text-align: center;
+}
+
+.AgendaEditor .time {
+	background-color: white;
+}
+
+.AgendaEditor .time.from {
+	width: 5ch;
+	margin: 0 auto;
+	position: relative;
+	top: -13px;
+}
+
+.AgendaEditor .time.duration input {
+	width: 5ch;
+}
+
+.AgendaEditor .time.to {
+	visibility: hidden;
+}
+
+.AgendaEditor tr:last-child .time.to {
+	visibility: visible;
+	width: 5ch;
+	margin: 0 auto;
+	position: relative;
+	bottom: -14px;
+}
+
+.AgendaEditor .time.duration {
+	font-weight: normal;
+	white-space: nowrap;
+}
+
+.AgendaEditor .empty-slot {
+	height: 100%;
+	border: 4px dashed rgba(0%, 0%, 0%, .06);
+}
+
+#session-list {
+	height: calc(100% - 20px);
+}
+
+#session-list ul {
+	margin-top: 0;
+	margin-bottom: 0;
+	padding: 4px 0 0 0;
+	height: calc(100% - 5px);
+	list-style: none;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+#session-list li {
+	border: thin solid lightgray;
+	background-color: white;
+	padding: 4px;
+}
+
+#session-list li+li {
+	margin-top: 4px;
+}
+
+/* 
+AgendaEditor-container {
+	padding: 4px 0 4px 4px;
+	width: calc(100% - 212px);
+	height: 100vh;
+	overflow: scroll;
+}
+
+#session-list-container {
+	padding: 4px;
+	width: 200px;
+	height: calc(100vh - 12px);
+	float: right;
+}
+
+#session-list-container h3 {
+	margin: 0;
+	padding: 4px;
+	height: 20px;
+	background: mediumaquamarine;
+	cursor: pointer;
+}
+
+.collapse-session-list AgendaEditor-container {
+	width: calc(100% - 41px);
+}
+
+.collapse-session-list #session-list-container {
+	width: calc(21px);
+}
+
+.collapse-session-list #session-list-container h3 {
+	transform: rotate(90deg);
+	transform-origin: 10.5px 10.5px;
+	height: 21px;
+	width: calc(100vh - 16px);
+}
+
+.collapse-session-list #session-list-container #session-list {
+	display: none;
+}
+ */

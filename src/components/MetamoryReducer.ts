@@ -54,7 +54,6 @@ type Action =
 	| DRAFT_CONTENT_CHANGED
 
 export function reducer(state: State, action: Action): State {
-	// console.log("***", action)
 	switch (action.type) {
 		case "VERSIONS_LOADED":
 			const newestVersionId =

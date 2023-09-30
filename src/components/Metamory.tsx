@@ -8,12 +8,12 @@ const defaultMetamoryContext = {
 	versions: [] as Version[],
 	currentVersionId: undefined as string | undefined,
 	publishedVersionId: undefined as string | undefined,
-	load: (contentId: string) => {},
-	save: (content: string, label: string) => {},
-	publish: (versionId: string, from: string) => {},
-	changeVersion: (versionId: string) => {},
-	changeContent: (content: string) => {},
-	changeContentType: (mimeType: string) => {}
+	load: (contentId: string) => { },
+	save: (content: string, label: string) => { },
+	publish: (versionId: string, from: string) => { },
+	changeVersion: (versionId: string) => { },
+	changeContent: (content: string) => { },
+	changeContentType: (mimeType: string) => { }
 }
 
 export const MetamoryContext = React.createContext(defaultMetamoryContext)
@@ -36,9 +36,15 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			return
 		}
 
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`)
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`, {/*mode: "cors"*/ })
 			.then((response) => {
-				return Promise.all([response.text(), response.headers.get("Content-Type")!])
+				const contentType = response.headers.get("Content-Type")!
+				if (contentType.endsWith("/json") || contentType.endsWith("+json")) {
+					return Promise.all([response.json(), contentType])
+				}
+				else {
+					return Promise.all([response.text(), contentType])
+				}
 			})
 			.then(([content, contentType]) => {
 				dispatch({ type: "LOADED", content, contentType })
@@ -54,7 +60,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 
 	useEffect(() => {
 		// load versions
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions`)
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions` /*, {mode: "cors"}*/)
 			.then((response) => response.json())
 			.then((data) => {
 				dispatch({
@@ -79,7 +85,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		}
 		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}`, {
 			method: "POST",
-			mode: "cors",
+			// mode: "cors",
 			cache: "no-cache",
 			headers: {
 				"Content-Type": "application/json"
@@ -100,7 +106,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		}
 		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status`, {
 			method: "POST",
-			mode: "cors",
+			// mode: "cors",
 			cache: "no-cache",
 			headers: {
 				"Content-Type": "application/json"
