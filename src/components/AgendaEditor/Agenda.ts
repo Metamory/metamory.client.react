@@ -4,7 +4,7 @@ export type Location = {
     name: string
 }
 
-export type Session = {
+export type SessionId = {
     id: number | null
 }
 
@@ -20,14 +20,14 @@ export type KeynoteTimeslot = {
     id: number
     duration: number
     timeslotType: "keynote"
-    sessions: Session[]
+    sessions: SessionId[]
 }
 
 export type BreakoutTimeslot = {
     id: number
     duration: number
     timeslotType: "breakout"
-    sessions: Session[]
+    sessions: SessionId[]
 }
 
 export type Timeslot = BreakTimeslot | KeynoteTimeslot | BreakoutTimeslot

@@ -1,10 +1,10 @@
 import React, { useContext, useReducer } from "react"
 import "./AgendaEditor.css"
 import { MetamoryContext } from "../Metamory"
-import { Locations } from "./Locations"
+import { LocationsRow } from "./LocationsRow"
 import { AgendaEditorContext, initialAgenda } from "./AgendaEditorContext"
 import { agendaReducer } from "./Reducers/AgendaReducer"
-import { Timeslots } from "./Timeslots"
+import { TimeslotRows } from "./TimeslotRows"
 
 
 export const AgendaEditor = () => {
@@ -37,8 +37,6 @@ AgendaEditor.mimeType = "application/agenda+json"
 const AgendaEditorInner = () => {
     const { dispatch, state } = useContext(AgendaEditorContext)
 
-
-
     return (
         <div className="frame AgendaEditor">
             <button onClick={() => dispatch({ type: "ADD_LOCATION" })}>Add location</button>
@@ -52,14 +50,14 @@ const AgendaEditorInner = () => {
 
             <table>
                 <thead>
-                    <Locations />
+                    <LocationsRow />
                 </thead>
                 <tfoot>
-                    <Locations />
+                    <EmptyRow locationCount={state.locations.length}/>
                 </tfoot>
-                {/* <tbody> */}
-                    <Timeslots />
-                {/* </tbody> */}
+                <tbody>
+                    <TimeslotRows />
+                </tbody>
             </table>
 
 
@@ -72,5 +70,18 @@ const AgendaEditorInner = () => {
 				}}
 			></textarea> */}
         </div>
+    )
+}
+
+
+type EmptyRowProps = {
+    locationCount: number
+}
+
+const EmptyRow = ({locationCount} : EmptyRowProps) => {
+    return (
+        <tr>
+            <td colSpan={locationCount + 2}></td>
+        </tr>
     )
 }

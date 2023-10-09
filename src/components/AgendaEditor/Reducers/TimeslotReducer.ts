@@ -29,7 +29,7 @@ type REMOVE_TIMESLOT_ACTION = {
 }
 
 type MOVE_TIMESLOT_ACTION = {
-    type: "MOVE_TIMESLOT"
+    type: "SWAP_TIMESLOTS"
     fromTimeslotIndex: number
     toTimeslotIndex: number
 }
@@ -93,32 +93,17 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
                 timeslots: [...state.timeslots.slice(0, action.timeslotIndex), ...state.timeslots.slice(action.timeslotIndex + 1)]
             };
 
-        case "MOVE_TIMESLOT":
-            let timeslots = state.timeslots;
-            let movingTimeslot = timeslots[action.fromTimeslotIndex];
-            console.log(movingTimeslot)
-            // insert at new pos
+        case "SWAP_TIMESLOTS":
+            console.log("*** SWAP_TIMESLOTS", action)
+            const timeslots = [...state.timeslots]
+            const tmpTimeslot = timeslots[action.fromTimeslotIndex]
+            timeslots[action.fromTimeslotIndex] = timeslots[action.toTimeslotIndex]
+            timeslots[action.toTimeslotIndex] = tmpTimeslot
 
-            if (action.fromTimeslotIndex < action.toTimeslotIndex) {
-
-                timeslots = [...timeslots.slice(0, action.toTimeslotIndex), movingTimeslot, ...timeslots.slice(action.toTimeslotIndex)]
-                timeslots = [...timeslots.slice(0, action.fromTimeslotIndex), ...timeslots.slice(action.fromTimeslotIndex + 1)]
-
-            } else {
-
-                timeslots = [...timeslots.slice(0, action.fromTimeslotIndex), ...timeslots.slice(action.fromTimeslotIndex + 1)]
-                timeslots = [...timeslots.slice(0, action.toTimeslotIndex), movingTimeslot, ...timeslots.slice(action.toTimeslotIndex)]
-
-            }
-
-            // remove from old pos
             return {
                 ...state,
                 timeslots
             };
-
-
-        // console.log(`NOT IMPLEMENTED - MOVE_TIMESLOT - from: ${action.fromTimeslotIndex}, to: ${action.toTimeslotIndex}`);
 
         default:
             return state;

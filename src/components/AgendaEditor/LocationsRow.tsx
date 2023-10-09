@@ -2,16 +2,16 @@ import React, { useContext } from "react"
 import { AgendaEditorContext } from "./AgendaEditorContext"
 import { Location } from "./Agenda"
 
-export const Locations = () => {
+export const LocationsRow = () => {
     const { state } = useContext(AgendaEditorContext)
 
     return (
         <tr>
-            <th>time</th>
+            <th></th>
             {
                 state.locations.map((location, ix) => <InnerLocation key={location.id} index={ix} location={location} />)
             }
-            <th>time</th>
+            <th></th>
         </tr>
     )
 }

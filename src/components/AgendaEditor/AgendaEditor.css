@@ -29,28 +29,6 @@ div.AgendaEditor {
 }
 
 
-
-/* 
-.table{
-	display: table;
-	border-collapse: collapse;
-}
-
-.table .tr{
-	display: table-row;
-}
-.table .td{
-	display: table-cell
-}
-
-.table > .tbody .td{
-	border: thin solid lightgrey;
-}
- */
-
-
-
-
 .AgendaEditor div {
 	padding: 0;
 	margin: 0;
@@ -66,7 +44,7 @@ div.AgendaEditor {
 .AgendaEditor [draggable] {
 	cursor: default;
 }
-.AgendaEditor .dropArea {
+.AgendaEditor .drop-area {
 	background-color: aliceblue;
 }
 
@@ -152,10 +130,6 @@ div.AgendaEditor {
 	text-align: center;
 }
 
-.AgendaEditor th .duration input {
-	text-align: center;
-}
-
 .AgendaEditor tr.break td input {
 	margin: 0 auto;
 	display: block;
@@ -170,11 +144,12 @@ div.AgendaEditor {
 	width: 5ch;
 	margin: 0 auto;
 	position: relative;
-	top: -13px;
+	top: -.75em;
 }
 
-.AgendaEditor .time.duration input {
-	width: 5ch;
+.AgendaEditor .duration input {
+	text-align: center;
+	width: 3ch;
 }
 
 .AgendaEditor .time.to {
@@ -186,10 +161,10 @@ div.AgendaEditor {
 	width: 5ch;
 	margin: 0 auto;
 	position: relative;
-	bottom: -14px;
+	bottom: -.6em;
 }
 
-.AgendaEditor .time.duration {
+.AgendaEditor .duration {
 	font-weight: normal;
 	white-space: nowrap;
 }
