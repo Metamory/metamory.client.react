@@ -29,7 +29,7 @@ type REMOVE_TIMESLOT_ACTION = {
 }
 
 type MOVE_TIMESLOT_ACTION = {
-    type: "SWAP_TIMESLOTS"
+    type: "MOVE_TIMESLOT"
     fromTimeslotIndex: number
     toTimeslotIndex: number
 }
@@ -93,12 +93,10 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
                 timeslots: [...state.timeslots.slice(0, action.timeslotIndex), ...state.timeslots.slice(action.timeslotIndex + 1)]
             };
 
-        case "SWAP_TIMESLOTS":
-            console.log("*** SWAP_TIMESLOTS", action)
+        case "MOVE_TIMESLOT":
             const timeslots = [...state.timeslots]
-            const tmpTimeslot = timeslots[action.fromTimeslotIndex]
-            timeslots[action.fromTimeslotIndex] = timeslots[action.toTimeslotIndex]
-            timeslots[action.toTimeslotIndex] = tmpTimeslot
+            const timeslotToMove = timeslots.splice(action.fromTimeslotIndex, 1)
+            timeslots.splice(action.toTimeslotIndex, 0, ...timeslotToMove)
 
             return {
                 ...state,

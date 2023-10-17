@@ -1,24 +1,14 @@
-import React, { useContext, useReducer } from "react"
+import React, { useContext } from "react"
 import "./AgendaEditor.css"
-import { MetamoryContext } from "../Metamory"
 import { LocationsRow } from "./LocationsRow"
 import { AgendaEditorContext, initialAgenda } from "./AgendaEditorContext"
-import { agendaReducer } from "./Reducers/AgendaReducer"
+import { ACTION, agendaReducer } from "./Reducers/AgendaReducer"
 import { TimeslotRows } from "./TimeslotRows"
+import { useContentReducer } from "../useContentReducer"
 
 
 export const AgendaEditor = () => {
-    const metamoryContext = useContext(MetamoryContext)
-
-    //TODO: When wrapReducer is working, place it on the metamoryContext!!!
-    const wrapReducer = <TState, TAction>(reducer: (state: TState, action: TAction) => TState) => (state: TState, action: TAction) => {
-        const newState = reducer(state, action)
-        metamoryContext.changeContent(JSON.stringify(newState))
-        return newState
-    }
-
-    //const [state, dispatch] = useReducer(wrapReducer(agendaReducer), metamoryContext.content ?? initialAgenda)
-    const [state, dispatch] = useReducer(agendaReducer, metamoryContext.content )
+    const [state, dispatch] = useContentReducer<any, ACTION>(agendaReducer, initialAgenda)
 
     const agendaContext = {
         state,
@@ -53,15 +43,14 @@ const AgendaEditorInner = () => {
                     <LocationsRow />
                 </thead>
                 <tfoot>
-                    <EmptyRow locationCount={state.locations.length}/>
+                    <tr>
+                        <td colSpan={state.locations.length + 2}></td>
+                    </tr>
                 </tfoot>
                 <tbody>
                     <TimeslotRows />
                 </tbody>
             </table>
-
-
-            {/* <button onClick={() => console.log("--save--", state)}>SAVE inside AGENDA-EDITOR</button> */}
 
             {/* <textarea
 				value={metamoryContext.content}
@@ -70,18 +59,5 @@ const AgendaEditorInner = () => {
 				}}
 			></textarea> */}
         </div>
-    )
-}
-
-
-type EmptyRowProps = {
-    locationCount: number
-}
-
-const EmptyRow = ({locationCount} : EmptyRowProps) => {
-    return (
-        <tr>
-            <td colSpan={locationCount + 2}></td>
-        </tr>
     )
 }

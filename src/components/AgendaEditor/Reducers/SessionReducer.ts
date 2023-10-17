@@ -1,21 +1,11 @@
-import { Agenda, BreakTimeslot, BreakoutTimeslot } from "../Agenda"
+import { Agenda, BreakTimeslot } from "../Agenda"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
 
-type CHANGE_BREAK_TITLE_ACTION = {
-    type: "CHANGE_BREAK_TITLE"
-    timeslotIndex: number
-    title: string
-}
-
-// type CLEAR_SESSION_ACTION = {
-//     type: "CLEAR_SESSION"
-//     timeslotIndex: number
-//     sessionIndex: number
-//     title: string
-// }
-
-export type SESSION_ACTION = CHANGE_BREAK_TITLE_ACTION /*| CLEAR_SESSION_ACTION*/
+export type SESSION_ACTION =
+    | { type: "CHANGE_BREAK_TITLE", timeslotIndex: number, title: string }
+//  | { type: "CLEAR_SESSION", timeslotIndex: number, sessionIndex: number }
+//  | { type: "SET_SESSION", timeslotIndex: number, sessionIndex: number, sessionId: string }
 
 export function sessionReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {
     switch (action.type) {

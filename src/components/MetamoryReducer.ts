@@ -1,3 +1,5 @@
+import { reducerFn } from "./useContentReducer"
+
 type State = {
 	contentId: string
 	content: any
@@ -32,26 +34,26 @@ export type Version = {
 
 export const DRAFT = "DRAFT"
 
-type VERSIONS_LOADED = { type: "VERSIONS_LOADED"; versions: Version[]; publishedVersionId?: string }
-type LOADING = { type: "LOADING"; contentId: string }
-type LOADED = { type: "LOADED"; content: any; contentType?: string }
-type SAVED = { type: "SAVED"; newlyCreatedVersion: Version }
-type PUBLISHED = { type: "PUBLISHED"; publishedVersionId: string }
-type CURRENT_VERSION_CHANGED = { type: "CURRENT_VERSION_CHANGED"; currentVersionId: string }
-type CONTENT_TYPE_CHANGED = { type: "CONTENT_TYPE_CHANGED"; contentType: string }
-type ENTER_DRAFT_MODE = { type: "ENTER_DRAFT_MODE"; currentUser: string }
-type DRAFT_CONTENT_CHANGED = { type: "DRAFT_CONTENT_CHANGED"; draftContent: any }
+//---
+const emptyReducer: reducerFn<any, any> = (state, _) => state
+
+let contentReducer = emptyReducer
+export const _setContentReducer = (reducer: reducerFn<unknown, unknown>) => {
+	contentReducer = reducer
+}
+//---
 
 type Action =
-	| VERSIONS_LOADED
-	| LOADING
-	| LOADED
-	| SAVED
-	| PUBLISHED
-	| CURRENT_VERSION_CHANGED
-	| ENTER_DRAFT_MODE
-	| CONTENT_TYPE_CHANGED
-	| DRAFT_CONTENT_CHANGED
+	| { type: "VERSIONS_LOADED"; versions: Version[]; publishedVersionId?: string }
+	| { type: "LOADING"; contentId: string }
+	| { type: "LOADED"; content: any; contentType?: string }
+	| { type: "SAVED"; newlyCreatedVersion: Version }
+	| { type: "PUBLISHED"; publishedVersionId: string }
+	| { type: "CURRENT_VERSION_CHANGED"; currentVersionId: string }
+	| { type: "CONTENT_TYPE_CHANGED"; contentType: string }
+	| { type: "ENTER_DRAFT_MODE"; currentUser: string }
+	| { type: "DRAFT_CONTENT_CHANGED"; draftContent: any }
+	| { type: "DISPATCH_ON_CONTENT"; action: any }
 
 export function reducer(state: State, action: Action): State {
 	switch (action.type) {
@@ -137,6 +139,21 @@ export function reducer(state: State, action: Action): State {
 					...state.draft,
 					content: action.draftContent
 				}
+			}
+
+		case "DISPATCH_ON_CONTENT":
+			console.log("*** DISPATCH_ON_CONTENT - This should enter into draftmode...")
+			const contentAction = action.action
+			const content = contentReducer(state.content, contentAction)
+
+			return {
+				...state,
+				//TODO: How to enter draft mode???
+				draft: state.draft && {
+					...state.draft,
+					content: content
+				},
+				content: content 
 			}
 	}
 }

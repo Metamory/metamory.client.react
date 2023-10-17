@@ -1,96 +1,73 @@
-import React, { Fragment, useContext, useState } from "react"
+import React, { Fragment, useContext } from "react"
 import { AgendaEditorContext } from "./AgendaEditorContext"
-import { BreakTimeslot, BreakoutTimeslot, KeynoteTimeslot, Timeslot } from "./Agenda"
+import { BreakoutTimeslot, Timeslot } from "./Agenda"
 import { SessionSlot } from "./Session"
 import classNames from "classnames"
+import { useSortableDragDrop } from "./useSortableDragDrop"
 
 
-type DragStatus = {
-    fromIndex?: number
-    currentIndex?: number
+type Row<T> = {
+    rowType: "item" | "drop-row"
+    data: T
+    key: React.Key
 }
-
-const emptyDragOverStatus: DragStatus = { fromIndex: undefined, currentIndex: undefined }
 
 export const TimeslotRows = () => {
     const { state, dispatch } = useContext(AgendaEditorContext)
-    const [dragStatus, setDragStatus] = useState<DragStatus>(emptyDragOverStatus)
+    const mimeTypeConverters: { mimeType: string; fn: (data: Timeslot, index: number) => string }[] = [
+        { mimeType: "application/agenda+timeslot+json", fn: (timeslot, index) => "" },
+        { mimeType: "text", fn: (timeslot, index) => `timeslot: ${timeslot.timeslotType} ${timeslot.duration} mins` }
+    ]
+    const dnd = useSortableDragDrop<Timeslot>(
+        ".duration.draghandle",
+        mimeTypeConverters,
+        state.timeslots.length,
+        (fromTimeslotIndex, toTimeslotIndex, _) => dispatch({ type: "MOVE_TIMESLOT", fromTimeslotIndex, toTimeslotIndex })
+    )
 
     const locationCount = state.locations.length
 
-
-    // --- Drag and Drop ---
-    const dragStart = (event: React.DragEvent, index: number, timeslot: Timeslot) => {
-        setDragStatus({
-            fromIndex: index,
-            currentIndex: undefined
-        })
-
-        event.dataTransfer.setData("application/agenda+timeslot+json", JSON.stringify({ /*dataType: "timeslot",*/ /*fromIndex: index*/ }))
-        event.dataTransfer.setData("text", `timeslot: ${timeslot.timeslotType} ${timeslot.duration} mins`)
-        event.dataTransfer.effectAllowed = "move"
-
-        event.dataTransfer.setDragImage(event.currentTarget, 0, event.currentTarget.clientHeight / 2)
-    }
-
-    const dragEnd = (event: React.DragEvent) => {
-        setDragStatus(emptyDragOverStatus)
-    }
-
-    const dragOver = (event: React.DragEvent, index: number) => {
-        setDragStatus({
-            ...dragStatus,
-            currentIndex: index
-        })
-
-        if (event.dataTransfer.types.includes("application/agenda+timeslot+json")) {
-            event.dataTransfer.dropEffect = "move"
-        } else {
-            event.dataTransfer.dropEffect = "none"
-        }
-    }
-
-    const handleDrop = (event: React.DragEvent, index: number) => {
-        event.preventDefault()
-        if (!event.dataTransfer.types.includes("application/agenda+timeslot+json")) {
-            return
-        }
-
-        let fromTimeslotIndex = dragStatus.fromIndex!
-        let toTimeslotIndex = index
-        dispatch({ type: "SWAP_TIMESLOTS", fromTimeslotIndex, toTimeslotIndex })
-    }
-
-    //---
-    type Row<T> = {
-        rowType: "item" | "drop-row"
-        data: T
-        key: React.Key
-    }
     let rows: Row<Timeslot>[] = state.timeslots.map((timeslot, index) => ({ rowType: "item", index, data: timeslot, key: index }))
 
-    if (dragStatus.fromIndex !== undefined && dragStatus.currentIndex !== undefined) {
-        const [{ data }] = rows.splice(dragStatus.fromIndex, 1)
-        rows.splice(dragStatus.currentIndex, 0, { rowType: "drop-row", data, key: dragStatus.currentIndex })
+    if (dnd.dragStatus.fromIndex !== undefined && dnd.dragStatus.currentIndex !== undefined) {
+        const [{ data }] = rows.splice(dnd.dragStatus.fromIndex, 1)
+        rows.splice(dnd.dragStatus.currentIndex, 0, { rowType: "drop-row", data, key: dnd.dragStatus.currentIndex })
     }
 
-    const rowElements = rows.map((row, index) =>
-        <Fragment key={row.data!.id}>
-            {
-                row.rowType === "item"
-                    ?
-                    <tr className={classNames("timeslot", row.data!.timeslotType)} draggable={true}
-                        onDragStart={e => dragStart(e, index, row.data!)} onDragOver={e => dragOver(e, index)} onDragEnd={e => dragEnd(e)} onDrop={e => handleDrop(e, index)}
-                    >
-                        <TimeslotRowCells index={index} timeslot={row.data!} locationCount={locationCount} />
-                    </tr>
-                    :
-                    <tr draggable={true} onDragEnd={e => dragEnd(e)} onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, index)}>
-                        <DropRow index={index} locationCount={locationCount} />
-                    </tr>
-            }
-        </Fragment>
-    )
+    const rowElements = rows.map((row, index) => {
+        const timeslot = row.data!
+        return (
+            <Fragment key={timeslot.id}>
+                {
+                    row.rowType === "item"
+                        ?
+                        <tr className={classNames("timeslot", row.data!.timeslotType)}
+                            draggable={true}
+                            onMouseDown={dnd.mouseDown}
+                            onMouseUp={dnd.mouseUp}
+                            onDragStart={dnd.dragStart(index, row.data!)}
+                            onDragOver={dnd.dragOver(index)}
+                            onDragEnd={dnd.dragEnd}
+                            ref={elmnt => dnd.setElementRef(elmnt, index)}
+                        >
+                            <DurationCell duration={timeslot.duration} timeSlotIndex={index} />
+                            <TimeslotCells index={index} timeslot={timeslot} locationCount={locationCount} />
+                            <DurationCell duration={timeslot.duration} timeSlotIndex={index} />
+                        </tr>
+                        :
+                        // row.rowType === "drop-row"
+                        <tr onDragEnd={dnd.dragEnd}
+                            onDragOver={e => e.preventDefault()}
+                            onDrop={dnd.handleDrop(index)}
+                            ref={elmnt => dnd.setElementRef(elmnt, index)}
+                        >
+                            <td colSpan={locationCount + 2} className="drop-area">
+                            </td>
+                        </tr>
+                }
+            </Fragment >
+        )
+    })
 
     return (
         <>
@@ -100,28 +77,12 @@ export const TimeslotRows = () => {
 }
 
 
-type DropRowProps = {
-    index: number
-    locationCount: number
-    // handleDrop: (event: React.DragEvent, index: number) => void
+type DurationCellProps = {
+    duration: number
+    timeSlotIndex: number
 }
 
-const DropRow = ({ index, locationCount }: DropRowProps) => {
-    return (
-        <td colSpan={locationCount + 2} className="drop-area" onDrop={(e) => console.log("***@@@***")}>
-            DROP ROW index: {index}
-        </td>
-    )
-}
-
-
-type TimeslotRowCellsProps = {
-    index: number
-    timeslot: Timeslot
-    locationCount: number
-}
-
-const TimeslotRowCells = ({ index, timeslot, locationCount }: TimeslotRowCellsProps) => {
+const DurationCell = ({ duration, timeSlotIndex }: DurationCellProps) => {
     const { dispatch } = useContext(AgendaEditorContext)
 
     const removeTimeslot = (timeslotIndex: number) => {
@@ -140,27 +101,18 @@ const TimeslotRowCells = ({ index, timeslot, locationCount }: TimeslotRowCellsPr
     }
 
     return (
-        <>
-            <th className="duration">
-                <button className="icons" onClick={() => removeTimeslot(index)}>
-                    &times;
-                </button>
-                {/* <div className="time from">10:00</div> */}
-                <input type="text" value={timeslot.duration} onChange={event => setTimeslotDuration(parseInt(event.target.value, 10), index)} /> mins
-                {/* <div className="time to">10:45</div> */}
-            </th>
-
-            <TimeslotCells index={index} timeslot={timeslot} locationCount={locationCount} />
-
-            <th className="duration">
-                <button className="icons" onClick={() => removeTimeslot(index)}>
-                    &times;
-                </button>
-                {/* <div className="time from">10:00</div> */}
-                <input type="text" value={timeslot.duration} onChange={event => setTimeslotDuration(parseInt(event.target.value, 10), index)} /> mins
-                {/* <div className="time to">10:45</div> */}
-            </th>
-        </>
+        <th className="duration draghandle">
+            <button className="icons" onClick={() => removeTimeslot(timeSlotIndex)}>
+                &times;
+            </button>
+            {/* <div className="time from">10:00</div> */}
+            <input
+                type="text"
+                value={duration}
+                onChange={event => setTimeslotDuration(parseInt(event.target.value, 10), timeSlotIndex)}
+            /> mins
+            {/* <div className="time to">10:45</div> */}
+        </th>
     )
 }
 

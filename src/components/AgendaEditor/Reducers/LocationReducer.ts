@@ -3,23 +3,10 @@ import { Agenda } from "../Agenda"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
 
-type ADD_LOCATION_ACTION = {
-	type: "ADD_LOCATION"
-}
-
-type CHANGE_LOCATION_NAME_ACTION = {
-	type: "CHANGE_LOCATION_NAME"
-	locationIndex: number
-	name: string
-
-}
-
-type REMOVE_LOCATION_ACTION = {
-	type: "REMOVE_LOCATION"
-	locationIndex: number
-}
-
-export type LOCATION_ACTION = ADD_LOCATION_ACTION | CHANGE_LOCATION_NAME_ACTION | REMOVE_LOCATION_ACTION
+export type LOCATION_ACTION =
+	| { type: "ADD_LOCATION" }
+	| { type: "CHANGE_LOCATION_NAME", locationIndex: number, name: string }
+	| { type: "REMOVE_LOCATION", locationIndex: number }
 
 
 export function locationReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {

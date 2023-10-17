@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer } from "react"
-import { reducer, initialState, DRAFT, Version } from "./MetamoryReducer"
+import { reducer, initialState, DRAFT, Version, _setContentReducer } from "./MetamoryReducer"
+import { reducerFn } from "./useContentReducer"
 
 const defaultMetamoryContext = {
 	contentId: "",
@@ -13,7 +14,9 @@ const defaultMetamoryContext = {
 	publish: (versionId: string, from: string) => { },
 	changeVersion: (versionId: string) => { },
 	changeContent: (content: string) => { },
-	changeContentType: (mimeType: string) => { }
+	changeContentType: (mimeType: string) => { },
+	setContentReducer: (contentReducer: reducerFn<any, any>) => {},
+	dispatchOnContent: (action: any) => { } // dispatch on contentReducer (NOT on metamoryReducer)
 }
 
 export const MetamoryContext = React.createContext(defaultMetamoryContext)
@@ -137,6 +140,14 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		dispatch({ type: "CONTENT_TYPE_CHANGED", contentType: mimeType })
 	}
 
+	const setContentReducer = (reducer: reducerFn<any, unknown>) => {
+		_setContentReducer(reducer)
+	}
+
+	const dispatchOnContent = (contentAction: unknown) => {
+		dispatch({type: "DISPATCH_ON_CONTENT", action: contentAction})
+	}
+
 	const context = {
 		contentId: state.contentId,
 		contentType: state.currentVersionId === DRAFT ? state.draft?.contentType : state.contentType,
@@ -149,7 +160,9 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		publish,
 		changeVersion,
 		changeContent,
-		changeContentType
+		changeContentType,
+		setContentReducer,
+		dispatchOnContent
 	}
 
 	return <MetamoryContext.Provider value={context}>{children}</MetamoryContext.Provider>
