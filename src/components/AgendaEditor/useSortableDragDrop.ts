@@ -52,7 +52,7 @@ export const useSortableDragDrop = <TData>(
             event.preventDefault()
             return
         }
-
+        
         setDragStatus({
             ...dragStatus,
             fromIndex: index,
@@ -63,7 +63,9 @@ export const useSortableDragDrop = <TData>(
             event.dataTransfer.setData(converter.mimeType, converter.fn(data, index))
         })
         event.dataTransfer.effectAllowed = "move"
-        event.dataTransfer.setDragImage(event.currentTarget, event.clientX, event.currentTarget.clientHeight / 2)
+        const x = event.clientX - event.currentTarget.getBoundingClientRect().left
+        event.dataTransfer.setDragImage(event.currentTarget, x, event.currentTarget.clientHeight / 2)
+        event.stopPropagation()
     }
 
     const dragEnd = (event: React.DragEvent) => {
@@ -71,6 +73,9 @@ export const useSortableDragDrop = <TData>(
     }
 
     const dragOver = (index: number) => (event: React.DragEvent) => {
+        event.preventDefault()
+        event.stopPropagation()
+
         setDragStatus({
             ...dragStatus,
             currentIndex: index

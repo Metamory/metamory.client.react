@@ -2,6 +2,7 @@ import { maxBy } from "../../../max"
 import { Agenda } from "../Agenda"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
+import { changeAtIndex, removeAtIndex } from "./array-helpers"
 
 export type LOCATION_ACTION =
 	| { type: "ADD_LOCATION" }
@@ -12,51 +13,44 @@ export type LOCATION_ACTION =
 export function locationReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {
 	switch (action.type) {
 		case "ADD_LOCATION":
+			const newLocation = {
+				id: state.locations.reduce(maxBy(location => location.id), 0) + 1,
+				name: "new location"
+			}
 			return {
 				...state,
-				locations: [...state.locations, {
-					id: state.locations.reduce(maxBy(location => location.id), 0) + 1,
-					name: "new location"
-				}],
-				timeslots: [...state.timeslots.map(ts => {
-					switch (ts.timeslotType) {
-						case "breakout":
-							return {
-								...ts,
-								sessions: [...ts.sessions, {
-									id: null
-								}]
-							}
-
-						default:
-							return ts
-					}
-				})]
+				locations: [...state.locations, newLocation],
+				timeslots: [...state.timeslots.map(ts =>
+					ts.timeslotType === "breakout"
+						? {
+							...ts,
+							sessions: [...ts.sessions, { id: null }]
+						}
+						: ts
+				)]
 			}
 
 		case "CHANGE_LOCATION_NAME":
+			const replacement = {
+				name: action.name,
+				id: state.locations[action.locationIndex]?.id
+			}
+
 			return {
 				...state,
-				locations: [
-					...state.locations.slice(0, action.locationIndex),
-					{
-						name: action.name,
-						id: state.locations[action.locationIndex]?.id
-					},
-					...state.locations.slice(action.locationIndex + 1)
-				]
+				locations: changeAtIndex(state.locations, action.locationIndex, replacement)
 			}
 
 		case "REMOVE_LOCATION":
 			return {
 				...state,
-				locations: [...state.locations.slice(0, action.locationIndex), ...state.locations.slice(action.locationIndex + 1)],
+				locations: removeAtIndex(state.locations, action.locationIndex),
 				timeslots: [...state.timeslots.map(ts => {
 					switch (ts.timeslotType) {
 						case "breakout":
 							return {
 								...ts,
-								sessions: [...ts.sessions.slice(0, action.locationIndex), ...ts.sessions.slice(action.locationIndex + 1)]
+								sessions: removeAtIndex(ts.sessions, action.locationIndex)
 							}
 
 						default:

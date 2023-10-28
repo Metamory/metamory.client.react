@@ -2,6 +2,7 @@ import { maxBy } from "../../../max"
 import { Agenda } from "../Agenda"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
+import { moveInArray, removeAtIndex } from "./array-helpers"
 
 
 type ADD_BREAKOUTSESSION_ACTION = {
@@ -90,17 +91,13 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
         case "REMOVE_TIMESLOT":
             return {
                 ...state,
-                timeslots: [...state.timeslots.slice(0, action.timeslotIndex), ...state.timeslots.slice(action.timeslotIndex + 1)]
+                timeslots: removeAtIndex(state.timeslots, action.timeslotIndex)
             };
 
         case "MOVE_TIMESLOT":
-            const timeslots = [...state.timeslots]
-            const timeslotToMove = timeslots.splice(action.fromTimeslotIndex, 1)
-            timeslots.splice(action.toTimeslotIndex, 0, ...timeslotToMove)
-
             return {
                 ...state,
-                timeslots
+                timeslots: moveInArray(state.timeslots, action.fromTimeslotIndex, action.toTimeslotIndex)
             };
 
         default:

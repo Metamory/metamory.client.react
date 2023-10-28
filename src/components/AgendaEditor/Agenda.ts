@@ -8,7 +8,6 @@ export type SessionId = {
     id: number | null
 }
 
-
 export type BreakTimeslot = {
     id: number
     duration: number
@@ -30,7 +29,10 @@ export type BreakoutTimeslot = {
     sessions: SessionId[]
 }
 
-export type Timeslot = BreakTimeslot | KeynoteTimeslot | BreakoutTimeslot
+
+export type TimeslotWithSessions = KeynoteTimeslot | BreakoutTimeslot
+
+export type Timeslot = BreakTimeslot | TimeslotWithSessions
 
 export type Agenda = {
     start: string

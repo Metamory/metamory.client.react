@@ -4,10 +4,10 @@ import { BreakoutTimeslot, Timeslot } from "./Agenda"
 import { SessionSlot } from "./Session"
 import classNames from "classnames"
 import { useSortableDragDrop } from "./useSortableDragDrop"
-
+import { insertAtIndex, removeAtIndex } from "./Reducers/array-helpers"
 
 type Row<T> = {
-    rowType: "item" | "drop-row"
+    rowType: "item-row"|"drop-row"
     data: T
     key: React.Key
 }
@@ -27,11 +27,12 @@ export const TimeslotRows = () => {
 
     const locationCount = state.locations.length
 
-    let rows: Row<Timeslot>[] = state.timeslots.map((timeslot, index) => ({ rowType: "item", index, data: timeslot, key: index }))
+    let rows: Row<Timeslot>[] = state.timeslots.map((timeslot, index) => ({ rowType: "item-row", index, data: timeslot, key: index }))
 
     if (dnd.dragStatus.fromIndex !== undefined && dnd.dragStatus.currentIndex !== undefined) {
-        const [{ data }] = rows.splice(dnd.dragStatus.fromIndex, 1)
-        rows.splice(dnd.dragStatus.currentIndex, 0, { rowType: "drop-row", data, key: dnd.dragStatus.currentIndex })
+        const { data } = rows[dnd.dragStatus.fromIndex]
+        rows = removeAtIndex(rows, dnd.dragStatus.fromIndex)
+        rows = insertAtIndex(rows, dnd.dragStatus.currentIndex, {rowType: "drop-row", data, key: dnd.dragStatus.currentIndex })
     }
 
     const rowElements = rows.map((row, index) => {
@@ -39,19 +40,19 @@ export const TimeslotRows = () => {
         return (
             <Fragment key={timeslot.id}>
                 {
-                    row.rowType === "item"
+                    row.rowType === "item-row"
                         ?
-                        <tr className={classNames("timeslot", row.data!.timeslotType)}
+                        <tr className={classNames("timeslot", timeslot.timeslotType)}
                             draggable={true}
                             onMouseDown={dnd.mouseDown}
                             onMouseUp={dnd.mouseUp}
-                            onDragStart={dnd.dragStart(index, row.data!)}
+                            onDragStart={dnd.dragStart(index, timeslot)}
                             onDragOver={dnd.dragOver(index)}
                             onDragEnd={dnd.dragEnd}
                             ref={elmnt => dnd.setElementRef(elmnt, index)}
                         >
                             <DurationCell duration={timeslot.duration} timeSlotIndex={index} />
-                            <TimeslotCells index={index} timeslot={timeslot} locationCount={locationCount} />
+                            <TimeslotCells timeslotIndex={index} timeslot={timeslot} locationCount={locationCount} />
                             <DurationCell duration={timeslot.duration} timeSlotIndex={index} />
                         </tr>
                         :
@@ -118,12 +119,12 @@ const DurationCell = ({ duration, timeSlotIndex }: DurationCellProps) => {
 
 
 type TimeslotCellsProps = {
-    index: number
+    timeslotIndex: number
     timeslot: Timeslot
     locationCount: number
 }
 
-const TimeslotCells = ({ timeslot, locationCount, index }: TimeslotCellsProps) => {
+const TimeslotCells = ({ timeslot, locationCount, timeslotIndex }: TimeslotCellsProps) => {
     const { dispatch } = useContext(AgendaEditorContext)
     const setBreakTitle = (title: string, timeslotIndex: number) => {
         dispatch({
@@ -137,9 +138,9 @@ const TimeslotCells = ({ timeslot, locationCount, index }: TimeslotCellsProps) =
         case "breakout":
             return (
                 <>
-                    {(timeslot as BreakoutTimeslot).sessions.map((s, ix) =>
-                        <td key={ix} className="session">
-                            <SessionSlot session={s} />
+                    {(timeslot as BreakoutTimeslot).sessions.map((s, locationIndex) =>
+                        <td key={locationIndex} className="session">
+                            <SessionSlot session={s} timeslotIndex={timeslotIndex} locationIndex={locationIndex} />
                         </td>
                     )}
                 </>
@@ -149,7 +150,7 @@ const TimeslotCells = ({ timeslot, locationCount, index }: TimeslotCellsProps) =
             return (
                 <td colSpan={locationCount}>
                     <div>
-                        <input type="text" value={timeslot.title} onChange={event => setBreakTitle(event.target.value, index)} />
+                        <input type="text" value={timeslot.title} onChange={event => setBreakTitle(event.target.value, timeslotIndex)} />
                     </div>
                 </td>
             )
@@ -157,7 +158,7 @@ const TimeslotCells = ({ timeslot, locationCount, index }: TimeslotCellsProps) =
         case "keynote":
             return (
                 <td colSpan={locationCount} className="session">
-                    <SessionSlot session={timeslot.sessions[0]} />
+                    <SessionSlot session={timeslot.sessions[0]} timeslotIndex={timeslotIndex} locationIndex={0}  />
                 </td>
             )
     }
