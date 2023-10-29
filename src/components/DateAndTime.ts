@@ -8,8 +8,8 @@ export class Timespan {
             this.totalSeconds = param as number
             return
         } else if (param + '' === param) {
-            let parts = param.split(':');
-            this.totalSeconds = parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60;
+            let parts = param.split(':')
+            this.totalSeconds = parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60
             return
         }
 

@@ -169,6 +169,10 @@ div.AgendaEditor {
 	white-space: nowrap;
 }
 
+.AgendaEditor .session {
+	background: yellow;
+}
+
 .AgendaEditor .empty-slot {
 	height: 100%;
 	border: 4px dashed rgba(0%, 0%, 0%, .06);

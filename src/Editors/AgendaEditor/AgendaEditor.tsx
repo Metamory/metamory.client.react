@@ -4,7 +4,7 @@ import { LocationsRow } from "./LocationsRow"
 import { AgendaEditorContext, initialAgenda } from "./AgendaEditorContext"
 import { ACTION, agendaReducer } from "./Reducers/AgendaReducer"
 import { TimeslotRows } from "./TimeslotRows"
-import { useContentReducer } from "../useContentReducer"
+import { useContentReducer } from "../../Metamory/useContentReducer"
 
 
 export const AgendaEditor = () => {

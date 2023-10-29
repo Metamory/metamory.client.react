@@ -1,8 +1,8 @@
-import { maxBy } from "../../../max"
-import { Agenda } from "../Agenda"
+import { maxBy } from "../../../components/max"
+import { Agenda } from "./types"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
-import { moveInArray, removeAtIndex } from "./array-helpers"
+import { moveInArray, removeAtIndex } from "../../../components/array-helpers"
 
 
 type ADD_BREAKOUTSESSION_ACTION = {
@@ -53,7 +53,7 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
                         })
                     )
                 }]
-            };
+            }
 
         case "ADD_BREAK":
             return {
@@ -64,7 +64,7 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
                     timeslotType: "break",
                     title: action.title
                 }],
-            };
+            }
 
         case "ADD_KEYNOTE":
             return {
@@ -77,7 +77,7 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
                         id: null
                     }]
                 }]
-            };
+            }
 
         case "CHANGE_TIMESLOT_DURATION":
             return {
@@ -86,21 +86,21 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
                     ...state.timeslots[action.timeslotIndex],
                     duration: action.duration
                 }, ...state.timeslots.slice(action.timeslotIndex + 1)]
-            };
+            }
 
         case "REMOVE_TIMESLOT":
             return {
                 ...state,
                 timeslots: removeAtIndex(state.timeslots, action.timeslotIndex)
-            };
+            }
 
         case "MOVE_TIMESLOT":
             return {
                 ...state,
                 timeslots: moveInArray(state.timeslots, action.fromTimeslotIndex, action.toTimeslotIndex)
-            };
+            }
 
         default:
-            return state;
+            return state
     }
 }

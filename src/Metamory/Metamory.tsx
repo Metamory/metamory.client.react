@@ -15,7 +15,7 @@ const defaultMetamoryContext = {
 	changeVersion: (versionId: string) => { },
 	changeContent: (content: string) => { },
 	changeContentType: (mimeType: string) => { },
-	setContentReducer: (contentReducer: reducerFn<any, any>) => {},
+	setContentReducer: (contentReducer: reducerFn<any, any>) => { },
 	dispatchOnContent: (action: any) => { } // dispatch on contentReducer (NOT on metamoryReducer)
 }
 
@@ -126,18 +126,12 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 		dispatch({ type: "CURRENT_VERSION_CHANGED", currentVersionId: versionId })
 	}
 
-	const changeContent = (content: string) => {
-		if (state.currentVersionId !== DRAFT) {
-			dispatch({ type: "ENTER_DRAFT_MODE", currentUser })
-		}
-		dispatch({ type: "DRAFT_CONTENT_CHANGED", draftContent: content })
+	const changeContentType = (mimeType: string) => {
+		dispatch({ type: "CONTENT_TYPE_CHANGED", contentType: mimeType })
 	}
 
-	const changeContentType = (mimeType: string) => {
-		if (state.currentVersionId !== DRAFT) {
-			dispatch({ type: "ENTER_DRAFT_MODE", currentUser })
-		}
-		dispatch({ type: "CONTENT_TYPE_CHANGED", contentType: mimeType })
+	const changeContent = (content: string) => {
+		dispatch({ type: "DRAFT_CONTENT_CHANGED", draftContent: content })
 	}
 
 	const setContentReducer = (reducer: reducerFn<any, unknown>) => {
@@ -145,7 +139,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 	}
 
 	const dispatchOnContent = (contentAction: unknown) => {
-		dispatch({type: "DISPATCH_ON_CONTENT", action: contentAction})
+		dispatch({ type: "DISPATCH_ON_CONTENT", action: contentAction })
 	}
 
 	const context = {

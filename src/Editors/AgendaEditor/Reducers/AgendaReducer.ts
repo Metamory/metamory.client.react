@@ -1,4 +1,4 @@
-import { Agenda } from "../Agenda"
+import { Agenda } from "./types"
 import { initialAgenda } from "../AgendaEditorContext"
 import { LOCATION_ACTION, locationReducer } from "./LocationReducer"
 import { TIMESLOT_ACTION, timeslotReducer } from "./TimeslotReducer"

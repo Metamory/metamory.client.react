@@ -1,8 +1,8 @@
-import { maxBy } from "../../../max"
-import { Agenda } from "../Agenda"
+import { maxBy } from "../../../components/max"
+import { Agenda } from "./types"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
-import { changeAtIndex, removeAtIndex } from "./array-helpers"
+import { changeAtIndex, removeAtIndex } from "../../../components/array-helpers"
 
 export type LOCATION_ACTION =
 	| { type: "ADD_LOCATION" }

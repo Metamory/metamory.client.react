@@ -1,10 +1,11 @@
 import React, { Fragment, useContext } from "react"
 import { AgendaEditorContext } from "./AgendaEditorContext"
-import { BreakoutTimeslot, Timeslot } from "./Agenda"
+import { BreakoutTimeslot, Timeslot } from "./Reducers/types"
 import { SessionSlot } from "./Session"
 import classNames from "classnames"
-import { useSortableDragDrop } from "./useSortableDragDrop"
-import { insertAtIndex, removeAtIndex } from "./Reducers/array-helpers"
+import { useSortableDragDrop } from "../../components/DragDropHelpers/useSortableDragDrop"
+import { insertAtIndex, removeAtIndex } from "../../components/array-helpers"
+import { MimeTypeConverterArray } from "../../components/DragDropHelpers/types"
 
 type Row<T> = {
     rowType: "item-row"|"drop-row"
@@ -14,15 +15,15 @@ type Row<T> = {
 
 export const TimeslotRows = () => {
     const { state, dispatch } = useContext(AgendaEditorContext)
-    const mimeTypeConverters: { mimeType: string; fn: (data: Timeslot, index: number) => string }[] = [
-        { mimeType: "application/agenda+timeslot+json", fn: (timeslot, index) => "" },
-        { mimeType: "text", fn: (timeslot, index) => `timeslot: ${timeslot.timeslotType} ${timeslot.duration} mins` }
+    const mimeTypeConverters: MimeTypeConverterArray<Timeslot, number> = [
+        { mimeType: "application/agenda-timeslot+index+json", fn: (_, index) => ({ index }) },
+        { mimeType: "text", fn: (timeslot, _) => `timeslot: ${timeslot.timeslotType} ${timeslot.duration} mins` }
     ]
-    const dnd = useSortableDragDrop<Timeslot>(
+    const dnd = useSortableDragDrop<Timeslot, number>(
         ".duration.draghandle",
         mimeTypeConverters,
         state.timeslots.length,
-        (fromTimeslotIndex, toTimeslotIndex, _) => dispatch({ type: "MOVE_TIMESLOT", fromTimeslotIndex, toTimeslotIndex })
+        (fromTimeslotIndex, toTimeslotIndex) => dispatch({ type: "MOVE_TIMESLOT", fromTimeslotIndex, toTimeslotIndex })
     )
 
     const locationCount = state.locations.length

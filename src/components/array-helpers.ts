@@ -11,12 +11,12 @@ export function changeAtIndex<TData>(inArray: Array<TData>, index: number, repla
 
 // Returns a new array, with the insertion element inserted at pos
 export function insertAtIndex<TData>(inArray: Array<TData>, index: number, insertion: TData) {
-	return [...inArray.slice(0, index), insertion, ...inArray.slice(index)];
+	return [...inArray.slice(0, index), insertion, ...inArray.slice(index)]
 }
 
 // Returns a new array, with the element at pos removed
 export function removeAtIndex<TData>(inArray: Array<TData>, index: number) {
-	return [...inArray.slice(0, index), ...inArray.slice(index + 1)];
+	return [...inArray.slice(0, index), ...inArray.slice(index + 1)]
 }
 
 // Returns a new array, with with an element moved from fromIndex to toIndex

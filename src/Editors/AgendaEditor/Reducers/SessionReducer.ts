@@ -1,7 +1,7 @@
-import { Agenda, SessionId, Timeslot, TimeslotWithSessions } from "../Agenda"
+import { Agenda, SessionId, Timeslot, TimeslotWithSessions } from "./types"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
-import { changeAtIndex } from "./array-helpers"
+import { changeAtIndex } from "../../../components/array-helpers"
 
 export type SESSION_ACTION =
     | { type: "SWAP_SESSION", fromTimeslotIndex: number, fromLocationIndex: number, toTimeslotIndex: number, toLocationIndex: number }

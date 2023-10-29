@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { MetamoryContext } from "./Metamory"
+import { MetamoryContext } from "../Metamory/Metamory"
 
 export const ContentIdSelector = () => {
 	const metamoryContext = useContext(MetamoryContext)

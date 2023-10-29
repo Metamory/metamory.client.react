@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { MetamoryContext } from "./Metamory"
+import { MetamoryContext } from "../Metamory/Metamory"
 
 type Props = {
 	editors: any[]

@@ -1,6 +1,6 @@
 import React, { useContext } from "react"
 import { AgendaEditorContext } from "./AgendaEditorContext"
-import { Location } from "./Agenda"
+import { Location } from "./Reducers/types"
 
 export const LocationsRow = () => {
     const { state } = useContext(AgendaEditorContext)
@@ -19,10 +19,8 @@ export const LocationsRow = () => {
 
 type InnerLocationProps = { index: number, location: Location }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 const InnerLocation = ({ index, location }: InnerLocationProps) => {
     const { dispatch } = useContext(AgendaEditorContext)
-
 
     const removeLocation = (locationIndex: number) => {
         dispatch({

@@ -1,5 +1,5 @@
 import React from "react"
-import { Agenda } from "./Agenda"
+import { Agenda } from "./Reducers/types"
 import { ACTION } from "./Reducers/AgendaReducer"
 
 

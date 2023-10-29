@@ -1,6 +1,6 @@
 import React, { useContext } from "react"
 import "./PlainTextEditor.css"
-import { MetamoryContext } from "./Metamory"
+import { MetamoryContext } from "../Metamory/Metamory"
 
 export const PlainTextEditor = () => {
 	const metamoryContext = useContext(MetamoryContext)

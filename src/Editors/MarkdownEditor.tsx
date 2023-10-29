@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 import "./MarkdownEditor.css"
 import ReactMarkdown from "react-markdown"
-import { MetamoryContext } from "./Metamory"
+import { MetamoryContext } from "../Metamory/Metamory"
 
 export const MarkdownEditor = () => {
 	const metamoryContext = useContext(MetamoryContext)

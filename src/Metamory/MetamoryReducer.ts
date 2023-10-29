@@ -44,16 +44,15 @@ export const _setContentReducer = (reducer: reducerFn<unknown, unknown>) => {
 //---
 
 type Action =
-	| { type: "VERSIONS_LOADED"; versions: Version[]; publishedVersionId?: string }
-	| { type: "LOADING"; contentId: string }
-	| { type: "LOADED"; content: any; contentType?: string }
-	| { type: "SAVED"; newlyCreatedVersion: Version }
-	| { type: "PUBLISHED"; publishedVersionId: string }
-	| { type: "CURRENT_VERSION_CHANGED"; currentVersionId: string }
-	| { type: "CONTENT_TYPE_CHANGED"; contentType: string }
-	| { type: "ENTER_DRAFT_MODE"; currentUser: string }
-	| { type: "DRAFT_CONTENT_CHANGED"; draftContent: any }
-	| { type: "DISPATCH_ON_CONTENT"; action: any }
+	| { type: "VERSIONS_LOADED", versions: Version[], publishedVersionId?: string }
+	| { type: "LOADING", contentId: string }
+	| { type: "LOADED", content: any, contentType?: string }
+	| { type: "SAVED", newlyCreatedVersion: Version }
+	| { type: "PUBLISHED", publishedVersionId: string }
+	| { type: "CURRENT_VERSION_CHANGED", currentVersionId: string }
+	| { type: "CONTENT_TYPE_CHANGED", contentType: string }
+	| { type: "DRAFT_CONTENT_CHANGED", draftContent: any }
+	| { type: "DISPATCH_ON_CONTENT", action: any, preventEnterDraftMode?: boolean }
 
 export function reducer(state: State, action: Action): State {
 	switch (action.type) {
@@ -102,58 +101,68 @@ export function reducer(state: State, action: Action): State {
 				currentVersionId: action.currentVersionId
 			}
 
-		case "ENTER_DRAFT_MODE":
-			//TODO: To be removed when DRAFT mode is automatically entered below
-			const draftVersion = {
-				author: action.currentUser,
-				label: "",
-				previousVersionId: state.currentVersionId,
-				timestamp: "",
-				versionId: DRAFT
-			}
+		case "CONTENT_TYPE_CHANGED": {
+			const stateInDraftMode = setStateInDraftMode(state, "currentUser")
 			return {
-				...state,
-				currentVersionId: draftVersion.versionId,
-				draft: {
-					version: draftVersion,
-					content: state.content,
-					contentType: state.contentType
-				}
-			}
-
-		case "CONTENT_TYPE_CHANGED":
-			//TODO: implement automatic entering DRAFT mode if not alread in DRAFT mode
-			return {
-				...state,
-				draft: state.draft && {
-					...state.draft,
+				...stateInDraftMode,
+				draft: stateInDraftMode.draft && {
+					...stateInDraftMode.draft,
 					contentType: action.contentType
 				}
 			}
+		}
 
-		case "DRAFT_CONTENT_CHANGED":
-			//TODO: implement automatic entering DRAFT mode if not alread in DRAFT mode
+		case "DRAFT_CONTENT_CHANGED": {
+			const stateInDraftMode = setStateInDraftMode(state, "currentUser")
 			return {
-				...state,
-				draft: state.draft && {
-					...state.draft,
+				...stateInDraftMode,
+				draft: stateInDraftMode.draft && {
+					...stateInDraftMode.draft,
 					content: action.draftContent
 				}
 			}
+		}
 
-		case "DISPATCH_ON_CONTENT":
-			console.log("*** DISPATCH_ON_CONTENT - This should enter into draftmode...")
+		case "DISPATCH_ON_CONTENT": {
+			const stateInDraftMode = action.preventEnterDraftMode === true
+				? state
+				: setStateInDraftMode(state, "currentUser")
+
 			const contentAction = action.action
 			const content = contentReducer(state.content, contentAction)
 
 			return {
-				...state,
-				//TODO: How to enter draft mode???
-				draft: state.draft && {
-					...state.draft,
+				...stateInDraftMode,
+				draft: stateInDraftMode.draft && {
+					...stateInDraftMode.draft,
 					content: content
 				},
 				content: content
 			}
+		}
+	}
+}
+
+
+function setStateInDraftMode(state: State, currentUser: string): State {
+	if (state.currentVersionId === DRAFT) {
+		return state
+	}
+
+	const draftVersion = {
+		author: currentUser,
+		label: "",
+		previousVersionId: state.currentVersionId,
+		timestamp: "",
+		versionId: DRAFT
+	}
+	return {
+		...state,
+		currentVersionId: draftVersion.versionId,
+		draft: {
+			version: draftVersion,
+			content: state.content,
+			contentType: state.contentType
+		}
 	}
 }

@@ -95,7 +95,7 @@ export const sessions: Record<number, SessionData> = {
 			{ id: 4 }, { id: 5 }
 		]
 	}
-};
+}
 
 
 export type Speaker = {
@@ -110,7 +110,7 @@ export const speakers: Record<number, Speaker> = {
 	3: { id: 3, name: 'Goofey' },
 	4: { id: 4, name: 'Lars Mjøen' },
 	5: { id: 5, name: 'Knut Lystad' },
-};
+}
 
 
 export type Tag = {
@@ -125,4 +125,4 @@ export const tags: Record<number, Tag> = {
 	3: { id: 3, name: 'Praise' },
 	4: { id: 4, name: 'Bullshit' },
 	5: { id: 5, name: 'Hokum' },
-};
+}
