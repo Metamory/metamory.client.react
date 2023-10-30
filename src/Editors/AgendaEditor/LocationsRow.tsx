@@ -6,7 +6,7 @@ export const LocationsRow = () => {
     const { state } = useContext(AgendaEditorContext)
 
     return (
-        <tr>
+        <tr className="locations">
             <th></th>
             {
                 state.locations.map((location, ix) => <InnerLocation key={location.id} index={ix} location={location} />)

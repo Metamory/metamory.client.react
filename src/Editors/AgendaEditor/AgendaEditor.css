@@ -44,6 +44,7 @@ div.AgendaEditor {
 .AgendaEditor [draggable] {
 	cursor: default;
 }
+
 .AgendaEditor .drop-area {
 	background-color: aliceblue;
 }
@@ -66,8 +67,9 @@ div.AgendaEditor {
 .AgendaEditor td .icons {
 	position: absolute;
 	top: 0;
-	right: -22px;
-	width: 22;
+	right: 0;
+	padding: 0;
+	width: 0;
 	height: 100%;
 	text-align: center;
 	font-weight: bold;
@@ -80,8 +82,18 @@ div.AgendaEditor {
 .AgendaEditor th:hover .icons,
 .AgendaEditor td:hover .icons {
 	color: black;
-	right: 0;
+	width: 22px;
 	transition: .2s;
+}
+
+.AgendaEditor tr.timeslot.dragging th:hover .icons {
+	display: none;
+	/* timeslot level drag and drop set .dragging at tr level */
+}
+
+.AgendaEditor td:hover.session .dragging .icons {
+	display: none;
+	/* session level drag and drop set .dragging at .session>div level */
 }
 
 .AgendaEditor th button,
@@ -111,19 +123,20 @@ div.AgendaEditor {
 .AgendaEditor td {
 	position: relative;
 	border: thin solid lightgray;
-	background-color: white;
-	padding: 4px;
-	height: 58px;
+	height: 62px;
 }
 
 .AgendaEditor th {
 	position: relative;
 	border-bottom: thin solid lightgray;
-	background-color: white;
 }
 
 .AgendaEditor tfoot th {
 	border-bottom: none;
+}
+
+.AgendaEditor tr.locations>th {
+	background: white;
 }
 
 .AgendaEditor th .location input {
@@ -136,15 +149,58 @@ div.AgendaEditor {
 	text-align: center;
 }
 
+/* --- */
+
 .AgendaEditor .time {
 	background-color: white;
+	border-radius: .5em;
 }
 
+/*
+	The timeslot list displays the time between the rows
+	.time.to on one row is the same as .time.from on the next row
+   	When both .time.from and .time.to are displayed simultaneously, they will overlap.
+	Either don't display one of them, or ensure that they have a background color, so one of them is hidden by the other one
+*/
+
 .AgendaEditor .time.from {
+	visibility: hidden;
 	width: 5ch;
 	margin: 0 auto;
 	position: relative;
-	top: -.75em;
+	top: -.85em;
+}
+
+.AgendaEditor div.time.to {
+	display: block;
+	width: 5ch;
+	margin: 0 auto;
+	position: relative;
+	bottom: -.75em;
+}
+
+.AgendaEditor .dragging .time.from,
+.AgendaEditor .dragging .time.to {
+	display: none;
+	/* don't display  .time.from and .time.to while dragging */
+}
+
+.AgendaEditor .dragging .duration {
+	background-color: white;
+}
+
+.AgendaEditor .timeslot:first-child .time.from,
+.AgendaEditor .drop-area+.timeslot .time.from {
+	visibility: visible;
+	/* display .time.from on top row, and on first row after .drop-area */
+}
+
+/* --- */
+
+
+.AgendaEditor .duration {
+	font-weight: normal;
+	white-space: nowrap;
 }
 
 .AgendaEditor .duration input {
@@ -152,26 +208,22 @@ div.AgendaEditor {
 	width: 3ch;
 }
 
-.AgendaEditor .time.to {
-	visibility: hidden;
+.AgendaEditor .break td {
+	background-color: white;
 }
 
-.AgendaEditor tr:last-child .time.to {
-	visibility: visible;
-	width: 5ch;
-	margin: 0 auto;
-	position: relative;
-	bottom: -.6em;
+.AgendaEditor .session>div {
+	height: 100%;
 }
 
-.AgendaEditor .duration {
-	font-weight: normal;
-	white-space: nowrap;
+.AgendaEditor td.session>div {
+	background-color: white;
+	padding: 4px;
 }
 
-.AgendaEditor .session {
-	background: yellow;
-}
+.AgendaEditor tr.timeslot>th,
+.AgendaEditor tr.timeslot>td {}
+
 
 .AgendaEditor .empty-slot {
 	height: 100%;

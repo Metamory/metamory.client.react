@@ -6,16 +6,20 @@ export const useDrag = <TData, TIndex>(
     mimeTypeConverters: MimeTypeConverterArray<TData, TIndex>
 ) => {
     const dragStart = (index: TIndex, data: TData) => (event: React.DragEvent) => {
+        event.stopPropagation()
+
         mimeTypeConverters.forEach(converter => {
             event.dataTransfer.setData(converter.mimeType, JsonStringifyIfNotString(converter.fn(data, index)))
         })
+
         event.dataTransfer.effectAllowed = "move"
         const x = event.clientX - event.currentTarget.getBoundingClientRect().left
         event.dataTransfer.setDragImage(event.currentTarget, x, event.currentTarget.clientHeight / 2)
-        event.stopPropagation()
+        event.currentTarget.classList.add("dragging")
     }
 
     const dragEnd = (event: React.DragEvent) => {
+        event.currentTarget.classList.remove("dragging")
     }
 
     return {

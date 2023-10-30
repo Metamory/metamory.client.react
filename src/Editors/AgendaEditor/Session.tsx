@@ -51,8 +51,6 @@ const NonEmptySlot = ({ session, timeslotIndex, locationIndex }: SessionSlotProp
     const { dispatch } = useContext(AgendaEditorContext)
 
     const dropFn = (fromIndex: SessionIndex, toIndex: SessionIndex) => {
-        console.log("*** A2", fromIndex, toIndex)
-
         dispatch({
             type: "SWAP_SESSION",
             fromTimeslotIndex: fromIndex.timeslotIndex,

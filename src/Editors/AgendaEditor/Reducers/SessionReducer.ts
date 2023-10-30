@@ -3,11 +3,13 @@ import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
 import { changeAtIndex } from "../../../components/array-helpers"
 
+
 export type SESSION_ACTION =
     | { type: "SWAP_SESSION", fromTimeslotIndex: number, fromLocationIndex: number, toTimeslotIndex: number, toLocationIndex: number }
     | { type: "CLEAR_SESSION", timeslotIndex: number, locationIndex: number }
     | { type: "SET_SESSION", timeslotIndex: number, locationIndex: number, sessionId: number }
 
+    
 export function sessionReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {
     switch (action.type) {
         case "SWAP_SESSION":

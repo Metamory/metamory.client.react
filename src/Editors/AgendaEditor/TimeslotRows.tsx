@@ -62,8 +62,9 @@ export const TimeslotRows = () => {
                             onDragOver={e => e.preventDefault()}
                             onDrop={dnd.handleDrop(index)}
                             ref={elmnt => dnd.setElementRef(elmnt, index)}
+                            className="drop-area"
                         >
-                            <td colSpan={locationCount + 2} className="drop-area">
+                            <td colSpan={locationCount + 2} >
                             </td>
                         </tr>
                 }
@@ -107,13 +108,13 @@ const DurationCell = ({ duration, timeSlotIndex }: DurationCellProps) => {
             <button className="icons" onClick={() => removeTimeslot(timeSlotIndex)}>
                 &times;
             </button>
-            {/* <div className="time from">10:00</div> */}
+            <div className="time from">10:00</div>
             <input
                 type="text"
                 value={duration}
                 onChange={event => setTimeslotDuration(parseInt(event.target.value, 10), timeSlotIndex)}
             /> mins
-            {/* <div className="time to">10:45</div> */}
+            <div className="time to">10:45</div>
         </th>
     )
 }

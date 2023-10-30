@@ -50,6 +50,7 @@ export const useSortableDragDrop = <TData, TIndex>(
             event.preventDefault()
             return
         }
+        event.stopPropagation()
         
         setDragStatus({
             ...dragStatus,
@@ -63,11 +64,12 @@ export const useSortableDragDrop = <TData, TIndex>(
         event.dataTransfer.effectAllowed = "move"
         const x = event.clientX - event.currentTarget.getBoundingClientRect().left
         event.dataTransfer.setDragImage(event.currentTarget, x, event.currentTarget.clientHeight / 2)
-        event.stopPropagation()
+        event.currentTarget.classList.add("dragging")
     }
 
     const dragEnd = (event: React.DragEvent) => {
         setDragStatus(emptyDragOverStatus)
+        event.currentTarget.classList.remove("dragging")
     }
 
     const dragOver = (index: TIndex) => (event: React.DragEvent) => {

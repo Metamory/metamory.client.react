@@ -4,6 +4,7 @@ import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
 import { changeAtIndex, removeAtIndex } from "../../../components/array-helpers"
 
+
 export type LOCATION_ACTION =
 	| { type: "ADD_LOCATION" }
 	| { type: "CHANGE_LOCATION_NAME", locationIndex: number, name: string }
