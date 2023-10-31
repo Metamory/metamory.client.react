@@ -1,88 +1,119 @@
-import { maxBy } from "../../../components/max"
-import { Agenda } from "./types"
+import { maxBy } from "../../../components/reducer-helpers"
+import { Agenda, BreakTimeslot, BreakoutTimeslot, KeynoteTimeslot, Timeslot } from "./types"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"
-import { moveInArray, removeAtIndex } from "../../../components/array-helpers"
+import { changeAtIndex, moveInArray, removeAtIndex } from "../../../components/array-helpers"
+import { TimeOfDay } from "../../../components/TimeOfDay"
 
 
 export type TIMESLOT_ACTION =
+    | { type: "ADD_KEYNOTE" }
     | { type: "ADD_BREAKOUTSESSION" }
     | { type: "ADD_BREAK", title: string }
-    | { type: "ADD_KEYNOTE" }
     | { type: "CHANGE_TIMESLOT_DURATION", timeslotIndex: number, duration: number }
     | { type: "REMOVE_TIMESLOT", timeslotIndex: number }
     | { type: "MOVE_TIMESLOT", fromTimeslotIndex: number, toTimeslotIndex: number }
 
-    
+
 export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {
     switch (action.type) {
-        case "ADD_BREAKOUTSESSION":
-            return {
-                ...state,
-                timeslots: [...state.timeslots, {
-                    id: state.timeslots.reduce(maxBy(timeslot => timeslot.id), 0) + 1,
-                    duration: 60,
-                    timeslotType: "breakout",
-                    sessions: state.locations.map(
-                        () => ({
-                            "id": null
-                        })
-                    )
+        case "ADD_KEYNOTE": {
+            const newTimeslot: KeynoteTimeslot = {
+                id: state.timeslots.reduce(maxBy(timeslot => timeslot.id), 0) + 1,
+                duration: 60,
+                from: "na",
+                to: "na",
+                timeslotType: "keynote",
+                sessions: [{
+                    id: null
                 }]
             }
-            //TODO: adjust start and end times
 
-        case "ADD_BREAK":
+            const timeslots: Array<Timeslot> = [...state.timeslots, newTimeslot]
             return {
                 ...state,
-                timeslots: [...state.timeslots, {
-                    id: state.timeslots.reduce(maxBy(timeslot => timeslot.id), 0) + 1,
-                    duration: 20,
-                    timeslotType: "break",
-                    title: action.title
-                }],
+                timeslots: timeslots.map(recalculateFromAndTo(state.start, timeslots))
             }
-            //TODO: adjust start and end times
+        }
 
-        case "ADD_KEYNOTE":
+        case "ADD_BREAKOUTSESSION": {
+            const newTimeslot: BreakoutTimeslot = {
+                id: state.timeslots.reduce(maxBy(timeslot => timeslot.id), 0) + 1,
+                duration: 60,
+                from: "na",
+                to: "na",
+                timeslotType: "breakout",
+                sessions: state.locations.map(
+                    () => ({
+                        "id": null
+                    })
+                )
+            }
+
+            const timeslots: Array<Timeslot> = [...state.timeslots, newTimeslot]
             return {
                 ...state,
-                timeslots: [...state.timeslots, {
-                    id: state.timeslots.reduce(maxBy(timeslot => timeslot.id), 0) + 1,
-                    duration: 60,
-                    timeslotType: "keynote",
-                    sessions: [{
-                        id: null
-                    }]
-                }]
+                timeslots: timeslots.map(recalculateFromAndTo(state.start, timeslots))
             }
-            //TODO: adjust start and end times
+        }
 
-        case "CHANGE_TIMESLOT_DURATION":
+        case "ADD_BREAK": {
+            const newTimeslot: BreakTimeslot = {
+                id: state.timeslots.reduce(maxBy(timeslot => timeslot.id), 0) + 1,
+                duration: 20,
+                from: "na",
+                to: "na",
+                timeslotType: "break",
+                title: action.title
+            }
+            const timeslots: Array<Timeslot> = [...state.timeslots, newTimeslot]
             return {
                 ...state,
-                timeslots: [...state.timeslots.slice(0, action.timeslotIndex), {
-                    ...state.timeslots[action.timeslotIndex],
-                    duration: action.duration
-                }, ...state.timeslots.slice(action.timeslotIndex + 1)]
+                timeslots: timeslots.map(recalculateFromAndTo(state.start, timeslots))
             }
-            //TODO: adjust start and end times
+        }
 
-        case "REMOVE_TIMESLOT":
+        case "CHANGE_TIMESLOT_DURATION":{
+            const timeslotToChange = state.timeslots[action.timeslotIndex]
+            const timeslots = changeAtIndex(state.timeslots, action.timeslotIndex, timeslot => ({
+                ...timeslot,
+                duration: action.duration
+            }))
+        return {
+                ...state,
+                timeslots: timeslots.map(recalculateFromAndTo(state.start, timeslots))
+            }
+    }
+
+        case "REMOVE_TIMESLOT":{
+            const timeslots = removeAtIndex(state.timeslots, action.timeslotIndex)
             return {
                 ...state,
-                timeslots: removeAtIndex(state.timeslots, action.timeslotIndex)
+                timeslots: timeslots.map(recalculateFromAndTo(state.start, timeslots))
             }
-            //TODO: adjust start and end times
+        }
 
-        case "MOVE_TIMESLOT":
+        case "MOVE_TIMESLOT":{
+            const timeslots = moveInArray(state.timeslots, action.fromTimeslotIndex, action.toTimeslotIndex)
             return {
                 ...state,
-                timeslots: moveInArray(state.timeslots, action.fromTimeslotIndex, action.toTimeslotIndex)
+                timeslots: timeslots.map(recalculateFromAndTo(state.start, timeslots))
             }
-            //TODO: adjust start and end times
+        }
 
         default:
             return state
+    }
+}
+
+
+const recalculateFromAndTo = (start: string, allTimeslots: Array<Timeslot>) => (timeslot: Timeslot, index: number) => {
+    const firstTimeslotFrom = new TimeOfDay(start)
+    const from = allTimeslots.slice(0, index).reduce((agg, curr) => agg.addMinutes(curr.duration), firstTimeslotFrom)
+
+    return {
+        ...timeslot,
+        from: from.format("hh:mm"),
+        to: from.addMinutes(timeslot.duration).format("hh:mm")
     }
 }

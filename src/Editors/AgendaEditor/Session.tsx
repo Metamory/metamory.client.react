@@ -42,6 +42,7 @@ const EmptySlot = ({ timeslotIndex, locationIndex }: EmptySlotProps) => {
             onDrop={droppable.handleDrop({ timeslotIndex, locationIndex })}
             onDragOver={droppable.dragOver({ timeslotIndex, locationIndex })}
         >
+            <div className="frame"></div>
         </div>
     )
 }

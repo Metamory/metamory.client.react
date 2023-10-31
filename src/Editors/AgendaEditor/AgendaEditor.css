@@ -1,23 +1,5 @@
 div.AgendaEditor {
 	padding: 0;
-
-	/* display: grid; */
-	grid-template-rows: auto;
-	grid-template-columns: auto;
-	grid-template-areas: "top" "bottom";
-}
-
-.AgendaEditor>.top {
-	grid-area: top;
-}
-
-.AgendaEditor>.bottom {
-	grid-area: bottom;
-}
-
-.AgendaEditor div.top {
-	padding: .5em;
-	border-bottom: 1px solid lightgrey;
 }
 
 .AgendaEditor textarea {
@@ -227,7 +209,13 @@ div.AgendaEditor {
 
 .AgendaEditor .empty-slot {
 	height: 100%;
-	border: 4px dashed rgba(0%, 0%, 0%, .06);
+	padding:4px;
+}
+
+.AgendaEditor .empty-slot div.frame {
+	height: calc(100% - 6px);
+	border: 3px dashed rgba(0%, 0%, 0%, .06);
+	border-radius: .5em;
 }
 
 #session-list {

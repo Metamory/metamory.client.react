@@ -1,4 +1,4 @@
-import { maxBy } from "../../../components/max"
+import { maxBy } from "../../../components/reducer-helpers"
 import { Agenda } from "./types"
 import { initialAgenda } from "../AgendaEditorContext"
 import { ACTION } from "./AgendaReducer"

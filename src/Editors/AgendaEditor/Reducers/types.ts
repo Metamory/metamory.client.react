@@ -8,23 +8,24 @@ export type SessionId = {
     id: number | null
 }
 
-export type BreakTimeslot = {
+type TimeslotBase = {
     id: number
     duration: number
+    from: string
+    to: string
+}
+
+export type BreakTimeslot = TimeslotBase & {
     timeslotType: 'break'
     title: string
 }
 
-export type KeynoteTimeslot = {
-    id: number
-    duration: number
+export type KeynoteTimeslot = TimeslotBase & {
     timeslotType: "keynote"
     sessions: SessionId[]
 }
 
-export type BreakoutTimeslot = {
-    id: number
-    duration: number
+export type BreakoutTimeslot = TimeslotBase & {
     timeslotType: "breakout"
     sessions: SessionId[]
 }

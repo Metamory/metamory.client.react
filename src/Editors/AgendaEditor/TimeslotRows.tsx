@@ -8,7 +8,7 @@ import { insertAtIndex, removeAtIndex } from "../../components/array-helpers"
 import { MimeTypeConverterArray } from "../../components/DragDropHelpers/types"
 
 type Row<T> = {
-    rowType: "item-row"|"drop-row"
+    rowType: "item-row" | "drop-row"
     data: T
     key: React.Key
 }
@@ -33,8 +33,10 @@ export const TimeslotRows = () => {
     if (dnd.dragStatus.fromIndex !== undefined && dnd.dragStatus.currentIndex !== undefined) {
         const { data } = rows[dnd.dragStatus.fromIndex]
         rows = removeAtIndex(rows, dnd.dragStatus.fromIndex)
-        rows = insertAtIndex(rows, dnd.dragStatus.currentIndex, {rowType: "drop-row", data, key: dnd.dragStatus.currentIndex })
+        rows = insertAtIndex(rows, dnd.dragStatus.currentIndex, { rowType: "drop-row", data, key: dnd.dragStatus.currentIndex })
     }
+
+    //TODO: recalculate displayed time.from and time.to while dragging
 
     const rowElements = rows.map((row, index) => {
         const timeslot = row.data!
@@ -52,9 +54,9 @@ export const TimeslotRows = () => {
                             onDragEnd={dnd.dragEnd}
                             ref={elmnt => dnd.setElementRef(elmnt, index)}
                         >
-                            <DurationCell duration={timeslot.duration} timeSlotIndex={index} />
+                            <DurationCell timeSlotIndex={index} timeslot={timeslot} />
                             <TimeslotCells timeslotIndex={index} timeslot={timeslot} locationCount={locationCount} />
-                            <DurationCell duration={timeslot.duration} timeSlotIndex={index} />
+                            <DurationCell timeSlotIndex={index} timeslot={timeslot} />
                         </tr>
                         :
                         // row.rowType === "drop-row"
@@ -81,11 +83,11 @@ export const TimeslotRows = () => {
 
 
 type DurationCellProps = {
-    duration: number
     timeSlotIndex: number
+    timeslot: Timeslot
 }
 
-const DurationCell = ({ duration, timeSlotIndex }: DurationCellProps) => {
+const DurationCell = ({ timeSlotIndex, timeslot }: DurationCellProps) => {
     const { dispatch } = useContext(AgendaEditorContext)
 
     const removeTimeslot = (timeslotIndex: number) => {
@@ -108,13 +110,13 @@ const DurationCell = ({ duration, timeSlotIndex }: DurationCellProps) => {
             <button className="icons" onClick={() => removeTimeslot(timeSlotIndex)}>
                 &times;
             </button>
-            <div className="time from">10:00</div>
+            <div className="time from">{timeslot.from}</div>
             <input
                 type="text"
-                value={duration}
+                value={timeslot.duration}
                 onChange={event => setTimeslotDuration(parseInt(event.target.value, 10), timeSlotIndex)}
             /> mins
-            <div className="time to">10:45</div>
+            <div className="time to">{timeslot.to}</div>
         </th>
     )
 }
@@ -160,7 +162,7 @@ const TimeslotCells = ({ timeslot, locationCount, timeslotIndex }: TimeslotCells
         case "keynote":
             return (
                 <td colSpan={locationCount} className="session">
-                    <SessionSlot session={timeslot.sessions[0]} timeslotIndex={timeslotIndex} locationIndex={0}  />
+                    <SessionSlot session={timeslot.sessions[0]} timeslotIndex={timeslotIndex} locationIndex={0} />
                 </td>
             )
     }
