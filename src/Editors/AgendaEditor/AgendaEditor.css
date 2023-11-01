@@ -218,6 +218,8 @@ div.AgendaEditor {
 	border-radius: .5em;
 }
 
+/**/
+
 #session-list {
 	height: calc(100% - 20px);
 }

@@ -13,8 +13,30 @@ type SessionIndex = {
 }
 
 const mimeTypeConverters: MimeTypeConverterArray<SessionId, SessionIndex> = [
-    { mimeType: "application/agenda-session+index+json", fn: (_, { timeslotIndex, locationIndex }) => ({ index: { timeslotIndex, locationIndex } }) },
-    { mimeType: "text", fn: (session, _) => `session id: ${session.id}` }
+    {
+        mimeType: "application/agenda-session+index+json",
+        convertDragDataToPayload: (_, { timeslotIndex, locationIndex }) => ({ index: { timeslotIndex, locationIndex } }),
+        convertDropPayloadToAction: (fromIndex, toIndex, _) => ({
+            type: "SWAP_SESSION",
+            fromTimeslotIndex: fromIndex.timeslotIndex,
+            fromLocationIndex: fromIndex.locationIndex,
+            toTimeslotIndex: toIndex.timeslotIndex,
+            toLocationIndex: toIndex.locationIndex,
+        })
+    },
+    // {
+    //     mimeType: "application/agenda-session+json",
+    //     convertDropPayloadToAction: (_, toIndex, session) => ({
+    //         type: "SET_SESSION",
+    //         timeslotIndex: toIndex.timeslotIndex,
+    //         locationIndex: toIndex.locationIndex,
+    //         sessionId: session.id
+    //     })
+    // },
+    {
+        mimeType: "text/plain",
+        convertDragDataToPayload: (session, _) => `session id: ${session.id}`,
+    }
 ]
 
 type EmptySlotProps = {
@@ -25,17 +47,7 @@ type EmptySlotProps = {
 
 const EmptySlot = ({ timeslotIndex, locationIndex }: EmptySlotProps) => {
     const { dispatch } = useContext(AgendaEditorContext)
-
-    const dropFn = (fromIndex: SessionIndex, toIndex: SessionIndex) => {
-        dispatch({
-            type: "SWAP_SESSION",
-            fromTimeslotIndex: fromIndex.timeslotIndex,
-            fromLocationIndex: fromIndex.locationIndex,
-            toTimeslotIndex: toIndex.timeslotIndex,
-            toLocationIndex: toIndex.locationIndex,
-        })
-    }
-    const droppable = useDrop(mimeTypeConverters, dropFn)
+    const droppable = useDrop(mimeTypeConverters, dispatch)
 
     return (
         <div className="empty-slot"
@@ -50,17 +62,7 @@ const EmptySlot = ({ timeslotIndex, locationIndex }: EmptySlotProps) => {
 
 const NonEmptySlot = ({ session, timeslotIndex, locationIndex }: SessionSlotProps) => {
     const { dispatch } = useContext(AgendaEditorContext)
-
-    const dropFn = (fromIndex: SessionIndex, toIndex: SessionIndex) => {
-        dispatch({
-            type: "SWAP_SESSION",
-            fromTimeslotIndex: fromIndex.timeslotIndex,
-            fromLocationIndex: fromIndex.locationIndex,
-            toTimeslotIndex: toIndex.timeslotIndex,
-            toLocationIndex: toIndex.locationIndex,
-        })
-    }
-    const droppable = useDrop(mimeTypeConverters, dropFn)
+    const droppable = useDrop(mimeTypeConverters, dispatch)
     const draggable = useDrag(mimeTypeConverters)
 
     if (session.id === undefined || session.id === null) {

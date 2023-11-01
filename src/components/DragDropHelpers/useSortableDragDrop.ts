@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { DropFn, MimeTypeConverterArray } from "./types"
+import { DispatchFn, DropFn, MimeTypeConverterArray } from "./types"
 import { JsonStringifyIfNotString } from "./helpers"
 
 type DragStatus<TIndex> = {
@@ -15,12 +15,12 @@ export const useSortableDragDrop = <TData, TIndex>(
     dragHandleQuerySelector: string,
     mimeTypeConverters: MimeTypeConverterArray<TData, TIndex>,
     elementCount: number,
-    drop: DropFn<TIndex>
+    dispatch: DispatchFn
 ) => {
     const [dragStatus, setDragStatus] = useState<DragStatus<TIndex>>(emptyDragOverStatus)
     const draggables = useRef<(HTMLTableRowElement | null)[]>([])
 
-    const defaultMimeType = mimeTypeConverters[0].mimeType
+    const droppableTypeConverters = mimeTypeConverters.filter(mimeTypeConverter => typeof mimeTypeConverter.convertDropPayloadToAction === "function")
 
     useEffect(() => {
         draggables.current = draggables.current.slice(0, elementCount)
@@ -51,16 +51,18 @@ export const useSortableDragDrop = <TData, TIndex>(
             return
         }
         event.stopPropagation()
-        
+
         setDragStatus({
             ...dragStatus,
             fromIndex: index,
             currentIndex: undefined,
         })
 
-        mimeTypeConverters.forEach(converter => {
-            event.dataTransfer.setData(converter.mimeType, JsonStringifyIfNotString(converter.fn(data, index)))
-        })
+        mimeTypeConverters
+            .filter(converter => typeof converter.convertDragDataToPayload === "function")
+            .forEach(converter => {
+                event.dataTransfer.setData(converter.mimeType, JsonStringifyIfNotString(converter.convertDragDataToPayload!(data, index)))
+            })
         event.dataTransfer.effectAllowed = "move"
         const x = event.clientX - event.currentTarget.getBoundingClientRect().left
         event.dataTransfer.setDragImage(event.currentTarget, x, event.currentTarget.clientHeight / 2)
@@ -81,22 +83,33 @@ export const useSortableDragDrop = <TData, TIndex>(
             currentIndex: index
         })
 
-        if (event.dataTransfer.types.includes(defaultMimeType)) {
+        const converters = droppableTypeConverters
+            .filter(droppableTypeConverter =>
+                event.dataTransfer.types.some(transferType => droppableTypeConverter.mimeType === transferType)
+            )
+
+        if (converters.length > 0) {
             event.dataTransfer.dropEffect = "move"
         } else {
             event.dataTransfer.dropEffect = "none"
         }
     }
 
-    const handleDrop = (index: TIndex) => (event: React.DragEvent) => {
+    const handleDrop = (toIndex: TIndex) => (event: React.DragEvent) => {
         event.preventDefault()
-        if (!event.dataTransfer.types.includes(defaultMimeType)) {
-            return
-        }
 
-        const fromIndex = dragStatus.fromIndex!
-        const toIndex = index
-        drop(fromIndex, toIndex)
+        droppableTypeConverters
+            .filter(droppableTypeConverter =>
+                event.dataTransfer.types.some(transferType => droppableTypeConverter.mimeType === transferType)
+            )
+            .slice(0, 1) // take only the first one
+            .forEach(converter => {
+                const rawData = JSON.parse(event.dataTransfer.getData(converter.mimeType))
+                const fromIndex = rawData.index
+                const action = converter.convertDropPayloadToAction!(fromIndex, toIndex, rawData)
+
+                dispatch(action)
+            })
     }
 
     return {

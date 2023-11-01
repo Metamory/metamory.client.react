@@ -8,9 +8,11 @@ export const useDrag = <TData, TIndex>(
     const dragStart = (index: TIndex, data: TData) => (event: React.DragEvent) => {
         event.stopPropagation()
 
-        mimeTypeConverters.forEach(converter => {
-            event.dataTransfer.setData(converter.mimeType, JsonStringifyIfNotString(converter.fn(data, index)))
-        })
+        mimeTypeConverters
+            .filter(converter => typeof converter.convertDragDataToPayload === "function")
+            .forEach(converter => {
+                event.dataTransfer.setData(converter.mimeType, JsonStringifyIfNotString(converter.convertDragDataToPayload!(data, index)))
+            })
 
         event.dataTransfer.effectAllowed = "move"
         const x = event.clientX - event.currentTarget.getBoundingClientRect().left

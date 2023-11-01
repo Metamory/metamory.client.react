@@ -1,17 +1,19 @@
+import { ACTION } from "../../Editors/AgendaEditor/Reducers/AgendaReducer"
 
-// export type MimeTypeConverter<TData, TIndex> = {
-//     mimeType: string
-//     fn: (data: TData, index: TIndex) => string
-// }
+export type DropFn<TIndex, TData> = (fromIndex: TIndex, toIndex: TIndex, data?: TData) => void
+
+export type DispatchFn = (action: ACTION) => void
+
+export type ConvertDragDataToPayloadFn<TData, TIndex> = (data: TData, index: TIndex) => string | any
+
+export type ConvertDropPayloadToActionFn<TIndex, TPayload> = (fromIndex: TIndex, toIndex: TIndex, data: TPayload) => ACTION
 
 export type MimeTypeConverter<TData, TIndex, TPayload> = {
     mimeType: string
-    fn: (data: TData, index: TIndex) => TPayload
+    convertDragDataToPayload?: ConvertDragDataToPayloadFn<TData, TIndex>
+    convertDropPayloadToAction?: ConvertDropPayloadToActionFn<TIndex, TPayload>
 }
 
-// The default converter MUST return an index object
-export type MimeTypeConverterArray<TData, TIndex> = [MimeTypeConverter<TData, TIndex, {index: any}>, ...Array<MimeTypeConverter<TData, TIndex, any>>]
+export type MimeTypeConverterArray<TData, TIndex> = Array<MimeTypeConverter<TData, TIndex, any>>
 
-
-export type DropFn<TIndex> = (fromIndex: TIndex, toIndex: TIndex) => void
 

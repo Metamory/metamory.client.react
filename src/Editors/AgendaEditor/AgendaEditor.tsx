@@ -5,6 +5,7 @@ import { AgendaEditorContext, initialAgenda } from "./AgendaEditorContext"
 import { ACTION, agendaReducer } from "./Reducers/AgendaReducer"
 import { TimeslotRows } from "./TimeslotRows"
 import { useContentReducer } from "../../Metamory/useContentReducer"
+import { sessions, speakers, tags } from "./SessionData"
 
 
 export const AgendaEditor = () => {
@@ -16,9 +17,34 @@ export const AgendaEditor = () => {
     }
 
     return (
-        <AgendaEditorContext.Provider value={agendaContext}>
-            <AgendaEditorInner />
-        </AgendaEditorContext.Provider>
+        <div className="frame AgendaEditor">
+            <AgendaEditorContext.Provider value={agendaContext}>
+                <AgendaEditorInner />
+            </AgendaEditorContext.Provider>
+            <SessionList />
+        </div>
+    )
+}
+
+const SessionList = () => {
+    return (
+        <div>
+            <h3>Sessions</h3>
+            {
+                sessions.map(session => (
+                    <div key={session.id}>
+                        <div>
+                            {sessions[session.id].title}
+                        </div>
+                        <div>
+                            {sessions[session.id].speakers.map((speaker, index) => <span key={index}>{speakers[speaker.id].name}</span>)}
+                        </div>
+                        <div className="tags">
+                            {sessions[session.id].tags.map((tag, index) => <span key={index} className="tag">{tags[tag.id].name}</span>)}
+                        </div>
+                    </div>))
+            }
+        </div>
     )
 }
 
@@ -28,7 +54,7 @@ const AgendaEditorInner = () => {
     const { dispatch, state } = useContext(AgendaEditorContext)
 
     return (
-        <div className="frame AgendaEditor">
+        <>
             <button onClick={() => dispatch({ type: "ADD_LOCATION" })}>Add location</button>
             <br />
             <br />
@@ -58,6 +84,6 @@ const AgendaEditorInner = () => {
 					metamoryContext.changeContent(event.currentTarget.value)
 				}}
 			></textarea> */}
-        </div>
+        </>
     )
 }

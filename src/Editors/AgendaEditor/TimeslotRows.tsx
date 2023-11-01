@@ -16,14 +16,25 @@ type Row<T> = {
 export const TimeslotRows = () => {
     const { state, dispatch } = useContext(AgendaEditorContext)
     const mimeTypeConverters: MimeTypeConverterArray<Timeslot, number> = [
-        { mimeType: "application/agenda-timeslot+index+json", fn: (_, index) => ({ index }) },
-        { mimeType: "text", fn: (timeslot, _) => `timeslot: ${timeslot.timeslotType} ${timeslot.duration} mins` }
+        {
+            mimeType: "application/agenda-timeslot+index+json",
+            convertDragDataToPayload: (_, index) => ({ index }),
+            convertDropPayloadToAction: (fromTimeslotIndex, toTimeslotIndex, _) => ({
+                type: "MOVE_TIMESLOT",
+                fromTimeslotIndex,
+                toTimeslotIndex
+            })
+        },
+        {
+            mimeType: "text",
+            convertDragDataToPayload: (timeslot, _) => `timeslot: ${timeslot.timeslotType} ${timeslot.duration} mins`
+        }
     ]
     const dnd = useSortableDragDrop<Timeslot, number>(
         ".duration.draghandle",
         mimeTypeConverters,
         state.timeslots.length,
-        (fromTimeslotIndex, toTimeslotIndex) => dispatch({ type: "MOVE_TIMESLOT", fromTimeslotIndex, toTimeslotIndex })
+        dispatch
     )
 
     const locationCount = state.locations.length

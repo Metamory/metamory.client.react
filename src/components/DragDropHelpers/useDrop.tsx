@@ -1,17 +1,23 @@
 import React from "react"
-import { DropFn, MimeTypeConverterArray } from "./types"
+import { DispatchFn, MimeTypeConverterArray } from "./types"
+
 
 export const useDrop = <TData, TIndex>(
     mimeTypeConverters: MimeTypeConverterArray<TData, TIndex>,
-    dropFn: DropFn<TIndex>
+    dispatchFn: DispatchFn
 ) => {
-    const defaultMimeType = mimeTypeConverters[0].mimeType
+    const droppableTypeConverters = mimeTypeConverters.filter(mimeTypeConverter => typeof mimeTypeConverter.convertDropPayloadToAction === "function")
 
     const dragOver = (index: TIndex) => (event: React.DragEvent) => {
         event.preventDefault()
         event.stopPropagation()
 
-        if (event.dataTransfer.types.includes(defaultMimeType)) {
+        const converters = droppableTypeConverters
+            .filter(droppableTypeConverter =>
+                event.dataTransfer.types.some(transferType => droppableTypeConverter.mimeType === transferType)
+            )
+
+        if (converters.length > 0) {
             event.dataTransfer.dropEffect = "move"
         } else {
             event.dataTransfer.dropEffect = "none"
@@ -20,13 +26,19 @@ export const useDrop = <TData, TIndex>(
 
     const handleDrop = (toIndex: TIndex) => (event: React.DragEvent) => {
         event.preventDefault()
-        if (!event.dataTransfer.types.includes(defaultMimeType)) {
-            return
-        }
 
-        // The default mimetype must return an object of type `{index: any}`
-        const fromIndex = JSON.parse(event.dataTransfer.getData(defaultMimeType)).index as TIndex
-        dropFn(fromIndex, toIndex)
+        droppableTypeConverters
+            .filter(droppableTypeConverter =>
+                event.dataTransfer.types.some(transferType => droppableTypeConverter.mimeType === transferType)
+            )
+            .slice(0, 1) // take only the first one
+            .forEach(converter => {
+                const rawData = JSON.parse(event.dataTransfer.getData(converter.mimeType))
+                const fromIndex = rawData.index
+                const action = converter.convertDropPayloadToAction!(fromIndex, toIndex, rawData)
+
+                dispatchFn(action)
+            })
     }
 
     return {
