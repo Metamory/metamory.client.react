@@ -24,15 +24,15 @@ const mimeTypeConverters: MimeTypeConverterArray<SessionId, SessionIndex> = [
             toLocationIndex: toIndex.locationIndex,
         })
     },
-    // {
-    //     mimeType: "application/agenda-session+json",
-    //     convertDropPayloadToAction: (_, toIndex, session) => ({
-    //         type: "SET_SESSION",
-    //         timeslotIndex: toIndex.timeslotIndex,
-    //         locationIndex: toIndex.locationIndex,
-    //         sessionId: session.id
-    //     })
-    // },
+    {
+        mimeType: "application/agenda-session+json",
+        convertDropPayloadToAction: (_, toIndex, session) => ({
+            type: "SET_SESSION",
+            timeslotIndex: toIndex.timeslotIndex,
+            locationIndex: toIndex.locationIndex,
+            sessionId: session.id
+        })
+    },
     {
         mimeType: "text/plain",
         convertDragDataToPayload: (session, _) => `session id: ${session.id}`,
@@ -80,9 +80,11 @@ const NonEmptySlot = ({ session, timeslotIndex, locationIndex }: SessionSlotProp
             onDrop={droppable.handleDrop({ timeslotIndex, locationIndex })}
         >
             <div>
-                <button className="icons" onClick={() => dispatch({ type: "CLEAR_SESSION", timeslotIndex, locationIndex })}>
-                    &times;
-                </button>
+                <div className="icons" >
+                    <button onClick={() => dispatch({ type: "CLEAR_SESSION", timeslotIndex, locationIndex })}>
+                        &times;
+                    </button>
+                </div>
                 <div>
                     {sessions[session.id].title}
                 </div>

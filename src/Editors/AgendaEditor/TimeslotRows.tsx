@@ -118,9 +118,11 @@ const DurationCell = ({ timeSlotIndex, timeslot }: DurationCellProps) => {
 
     return (
         <th className="duration draghandle">
-            <button className="icons" onClick={() => removeTimeslot(timeSlotIndex)}>
-                &times;
-            </button>
+            <div className="icons" >
+                <button onClick={() => removeTimeslot(timeSlotIndex)}>
+                    &times;
+                </button>
+            </div>
             <div className="time from">{timeslot.from}</div>
             <input
                 type="text"

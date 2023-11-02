@@ -1,33 +1,36 @@
-div.AgendaEditor {
-	padding: 0;
+div.agenda-editor-container {
+	width: calc(100% - 20);
+	display: grid;
+	grid-template-columns: 1fr min-content;
+	grid-template-areas: "editor sessions";
+	column-gap: 8px;
 }
 
-.AgendaEditor textarea {
-	font-family: 'Courier New', Courier, monospace;
-	font-size: 1em;
-	padding: 0;
-	border: none;
-	resize: vertical;
+.agenda-editor {
+	grid-area: editor;
 }
 
+.agenda-editor table {
+	width: 100%;
+}
 
-.AgendaEditor div {
+.agenda-editor div {
 	padding: 0;
 	margin: 0;
 }
 
-.AgendaEditor input {
+.agenda-editor input {
 	font-size: 1em;
 	background-color: rgba(0%, 0%, 0%, .03);
 	border: none;
 	border-bottom: thin solid rgba(0%, 0%, 0%, .1);
 }
 
-.AgendaEditor [draggable] {
+.agenda-editor [draggable] {
 	cursor: default;
 }
 
-.AgendaEditor .drop-area {
+.agenda-editor .drop-area {
 	background-color: aliceblue;
 }
 
@@ -44,9 +47,19 @@ div.AgendaEditor {
 	margin-left: .5em;
 }
 
+.agenda-editor thead tr,
+.agenda-editor tfoot tr {
+	background-color: white;
+}
 
-.AgendaEditor th .icons,
-.AgendaEditor td .icons {
+.agenda-editor tfoot tr td {
+	height: .5em;
+	border: none;
+}
+
+.agenda-editor th .icons,
+.agenda-editor td .icons {
+	overflow-x: hidden;
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -61,71 +74,62 @@ div.AgendaEditor {
 	transition: .5s;
 }
 
-.AgendaEditor th:hover .icons,
-.AgendaEditor td:hover .icons {
+.agenda-editor th:hover .icons,
+.agenda-editor td:hover .icons {
 	color: black;
 	width: 22px;
 	transition: .2s;
 }
 
-.AgendaEditor tr.timeslot.dragging th:hover .icons {
+.agenda-editor tr.timeslot.dragging th:hover .icons {
 	display: none;
 	/* timeslot level drag and drop set .dragging at tr level */
 }
 
-.AgendaEditor td:hover.session .dragging .icons {
+.agenda-editor td:hover.session .dragging .icons {
 	display: none;
 	/* session level drag and drop set .dragging at .session>div level */
 }
 
-.AgendaEditor th button,
-.AgendaEditor td button {
-	/* padding: none; */
+.agenda-editor th button,
+.agenda-editor td button {
 	border: none;
-	/* margin: none; */
 	text-align: center;
 	font-size: 1em;
 	font-weight: bold;
 	background-color: transparent;
 }
 
-.AgendaEditor table {
+.agenda-editor table {
 	overflow: hidden;
 	border-collapse: collapse;
 	margin-bottom: .5em;
-	width: 100%;
 }
 
-.AgendaEditor thead th:first-child,
-.AgendaEditor thead th:last-child {
+.agenda-editor thead th:first-child,
+.agenda-editor thead th:last-child {
 	width: 8em;
 	min-width: 8em;
 }
 
-.AgendaEditor td {
+.agenda-editor .drop-area td,
+.agenda-editor .timeslot td {
 	position: relative;
 	border: thin solid lightgray;
 	height: 62px;
 }
 
-.AgendaEditor th {
+.agenda-editor th {
 	position: relative;
 	border-bottom: thin solid lightgray;
 }
 
-.AgendaEditor tfoot th {
-	border-bottom: none;
-}
 
-.AgendaEditor tr.locations>th {
-	background: white;
-}
-
-.AgendaEditor th .location input {
+.agenda-editor th .location input {
 	text-align: center;
 }
 
-.AgendaEditor tr.break td input {
+.agenda-editor tr.break td input {
 	margin: 0 auto;
 	display: block;
 	text-align: center;
@@ -133,7 +137,7 @@ div.AgendaEditor {
 
 /* --- */
 
-.AgendaEditor .time {
+.agenda-editor .time {
 	background-color: white;
 	border-radius: .5em;
 }
@@ -145,7 +149,7 @@ div.AgendaEditor {
 	Either don't display one of them, or ensure that they have a background color, so one of them is hidden by the other one
 */
 
-.AgendaEditor .time.from {
+.agenda-editor .time.from {
 	visibility: hidden;
 	width: 5ch;
 	margin: 0 auto;
@@ -153,7 +157,7 @@ div.AgendaEditor {
 	top: -.85em;
 }
 
-.AgendaEditor div.time.to {
+.agenda-editor div.time.to {
 	display: block;
 	width: 5ch;
 	margin: 0 auto;
@@ -161,18 +165,18 @@ div.AgendaEditor {
 	bottom: -.75em;
 }
 
-.AgendaEditor .dragging .time.from,
-.AgendaEditor .dragging .time.to {
+.agenda-editor .dragging .time.from,
+.agenda-editor .dragging .time.to {
 	display: none;
 	/* don't display  .time.from and .time.to while dragging */
 }
 
-.AgendaEditor .dragging .duration {
+.agenda-editor .dragging .duration {
 	background-color: white;
 }
 
-.AgendaEditor .timeslot:first-child .time.from,
-.AgendaEditor .drop-area+.timeslot .time.from {
+.agenda-editor .timeslot:first-child .time.from,
+.agenda-editor .drop-area+.timeslot .time.from {
 	visibility: visible;
 	/* display .time.from on top row, and on first row after .drop-area */
 }
@@ -180,109 +184,109 @@ div.AgendaEditor {
 /* --- */
 
 
-.AgendaEditor .duration {
+.agenda-editor .duration {
 	font-weight: normal;
 	white-space: nowrap;
 }
 
-.AgendaEditor .duration input {
+.agenda-editor .duration input {
 	text-align: center;
 	width: 3ch;
 }
 
-.AgendaEditor .break td {
+.agenda-editor .break td {
 	background-color: white;
 }
 
-.AgendaEditor .session>div {
+.agenda-editor .session {
+	padding: 0;
+}
+
+.agenda-editor .session>div {
 	height: 100%;
 }
 
-.AgendaEditor td.session>div {
+.agenda-editor td.session>div {
 	background-color: white;
 	padding: 4px;
 }
 
-.AgendaEditor tr.timeslot>th,
-.AgendaEditor tr.timeslot>td {}
-
-
-.AgendaEditor .empty-slot {
+.agenda-editor .empty-slot {
 	height: 100%;
-	padding:4px;
+	padding: 4px;
 }
 
-.AgendaEditor .empty-slot div.frame {
+.agenda-editor .empty-slot div.frame {
 	height: calc(100% - 6px);
 	border: 3px dashed rgba(0%, 0%, 0%, .06);
 	border-radius: .5em;
 }
 
-/**/
-
-#session-list {
-	height: calc(100% - 20px);
-}
-
-#session-list ul {
+.session-list ul {
 	margin-top: 0;
 	margin-bottom: 0;
 	padding: 4px 0 0 0;
-	height: calc(100% - 5px);
 	list-style: none;
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
 
-#session-list li {
+.session-list li {
 	border: thin solid lightgray;
 	background-color: white;
 	padding: 4px;
 }
 
-#session-list li+li {
+.session-list li+li {
 	margin-top: 4px;
 }
 
-/* 
-AgendaEditor-container {
+
+.agenda-editor-container {
 	padding: 4px 0 4px 4px;
-	width: calc(100% - 212px);
-	height: 100vh;
 	overflow: scroll;
 }
 
-#session-list-container {
-	padding: 4px;
+.session-list {
+	grid-area: sessions;
 	width: 200px;
-	height: calc(100vh - 12px);
-	float: right;
 }
 
-#session-list-container h3 {
+.session-list h3 {
 	margin: 0;
 	padding: 4px;
 	height: 20px;
-	background: mediumaquamarine;
 	cursor: pointer;
+	
 }
 
-.collapse-session-list AgendaEditor-container {
-	width: calc(100% - 41px);
+.session-list .session {
+	border-radius: .25em;
 }
 
-.collapse-session-list #session-list-container {
-	width: calc(21px);
+
+.session-list.collapse-session-list {
+	width: 21px;
+	margin-right: 6px;
 }
 
-.collapse-session-list #session-list-container h3 {
+.session-list header {
+	display: block;
+	background: mediumaquamarine;
+}
+
+.session-list.collapse-session-list header{
+	height: 100%;
+	width: 27px;
+}
+
+.session-list.collapse-session-list h3 {
 	transform: rotate(90deg);
 	transform-origin: 10.5px 10.5px;
-	height: 21px;
-	width: calc(100vh - 16px);
+	margin-left: 6px;
+	margin-right: 6px;
 }
 
-.collapse-session-list #session-list-container #session-list {
+.session-list.collapse-session-list ul {
 	display: none;
 }
- */

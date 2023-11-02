@@ -5,7 +5,7 @@ import { AgendaEditorContext, initialAgenda } from "./AgendaEditorContext"
 import { ACTION, agendaReducer } from "./Reducers/AgendaReducer"
 import { TimeslotRows } from "./TimeslotRows"
 import { useContentReducer } from "../../Metamory/useContentReducer"
-import { sessions, speakers, tags } from "./SessionData"
+import { SessionList } from "./SessionList"
 
 
 export const AgendaEditor = () => {
@@ -17,33 +17,11 @@ export const AgendaEditor = () => {
     }
 
     return (
-        <div className="frame AgendaEditor">
+        <div className="frame agenda-editor-container">
             <AgendaEditorContext.Provider value={agendaContext}>
                 <AgendaEditorInner />
             </AgendaEditorContext.Provider>
             <SessionList />
-        </div>
-    )
-}
-
-const SessionList = () => {
-    return (
-        <div>
-            <h3>Sessions</h3>
-            {
-                sessions.map(session => (
-                    <div key={session.id}>
-                        <div>
-                            {sessions[session.id].title}
-                        </div>
-                        <div>
-                            {sessions[session.id].speakers.map((speaker, index) => <span key={index}>{speakers[speaker.id].name}</span>)}
-                        </div>
-                        <div className="tags">
-                            {sessions[session.id].tags.map((tag, index) => <span key={index} className="tag">{tags[tag.id].name}</span>)}
-                        </div>
-                    </div>))
-            }
         </div>
     )
 }
@@ -55,35 +33,31 @@ const AgendaEditorInner = () => {
 
     return (
         <>
-            <button onClick={() => dispatch({ type: "ADD_LOCATION" })}>Add location</button>
-            <br />
-            <br />
-            <button onClick={() => dispatch({ type: "ADD_KEYNOTE" })}>Add Keynote</button>
-            <button onClick={() => dispatch({ type: "ADD_BREAKOUTSESSION" })}>Add Breakout</button>
-            <button onClick={() => dispatch({ type: "ADD_BREAK", title: "Break" })}>Add Break</button>
-            <br />
-            <br />
-
-            <table>
-                <thead>
-                    <LocationsRow />
-                </thead>
-                <tfoot>
-                    <tr>
-                        <td colSpan={state.locations.length + 2}></td>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    <TimeslotRows />
-                </tbody>
-            </table>
-
-            {/* <textarea
-				value={metamoryContext.content}
-				onChange={(event) => {
-					metamoryContext.changeContent(event.currentTarget.value)
-				}}
-			></textarea> */}
+            <div className="agenda-editor">
+                <div>
+                    <button onClick={() => dispatch({ type: "ADD_LOCATION" })}>Add location</button>
+                    <br />
+                    <br />
+                    <button onClick={() => dispatch({ type: "ADD_KEYNOTE" })}>Add Keynote</button>
+                    <button onClick={() => dispatch({ type: "ADD_BREAKOUTSESSION" })}>Add Breakout</button>
+                    <button onClick={() => dispatch({ type: "ADD_BREAK", title: "Break" })}>Add Break</button>
+                    <br />
+                    <br />
+                </div>
+                <table>
+                    <thead>
+                        <LocationsRow />
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td colSpan={state.locations.length + 2}></td>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        <TimeslotRows />
+                    </tbody>
+                </table>
+            </div>
         </>
     )
 }
