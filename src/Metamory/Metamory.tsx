@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from "react"
 import { reducer, initialState, DRAFT, Version, _setContentReducer } from "./MetamoryReducer"
 import { reducerFn } from "./useContentReducer"
+import { useAuth0 } from "@auth0/auth0-react"
 
 const defaultMetamoryContext = {
 	contentId: "",
@@ -26,11 +27,13 @@ type MetamoryProps = {
 	siteName: string
 	contentId: string
 	currentUser: string
+	authHeaders: any,
 	children?: React.ReactNode
 }
 
-export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...props }: MetamoryProps) => {
+export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, children, ...props }: MetamoryProps) => {
 	const [state, dispatch] = useReducer(reducer, { ...initialState, contentId: props.contentId })
+	const { getAccessTokenSilently, } = useAuth0()
 
 	useEffect(() => {
 		// load content
@@ -39,7 +42,13 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			return
 		}
 
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`, {/*mode: "cors"*/ })
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`,
+			{
+				/*mode: "cors"*/
+				headers: {
+					...authHeaders
+				}
+			})
 			.then((response) => {
 				const contentType = response.headers.get("Content-Type")!
 				if (contentType.endsWith("/json") || contentType.endsWith("+json")) {
@@ -63,7 +72,18 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 
 	useEffect(() => {
 		// load versions
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions` /*, {mode: "cors"}*/)
+
+		getAccessTokenSilently()
+			.then(token => ({
+				Authorization: `Bearer ${token}`,
+			}))
+			.then(authHeaders => fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions`,
+				{
+					/*mode: "cors"*/
+					headers: {
+						...authHeaders
+					}
+				}))
 			.then((response) => response.json())
 			.then((data) => {
 				dispatch({
@@ -72,6 +92,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 					publishedVersionId: data.publishedVersionId
 				})
 			})
+			// .catch(err => console.log("*** err", err))
 	}, [serviceBaseUrl, siteName, state.contentId])
 
 	const load = (contentId: string) => {
@@ -91,7 +112,8 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			// mode: "cors",
 			cache: "no-cache",
 			headers: {
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				...authHeaders
 			},
 			body: JSON.stringify(body)
 		})
@@ -112,7 +134,8 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, children, ...p
 			// mode: "cors",
 			cache: "no-cache",
 			headers: {
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				...authHeaders
 			},
 			body: JSON.stringify(body)
 		})
