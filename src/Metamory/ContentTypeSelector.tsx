@@ -8,7 +8,8 @@ export const ContentTypeSelector = () => {
 		"text/markdown",
 		"application/json",
 		"application/agenda+json",
-		"application/table-of-contents+json"
+		"application/table-of-contents+json",
+		"application/annotated-text+json"
 	]
 
 	return (
