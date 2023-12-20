@@ -9,10 +9,10 @@ export type SESSION_ACTION =
     | { type: "CLEAR_SESSION", timeslotIndex: number, locationIndex: number }
     | { type: "SET_SESSION", timeslotIndex: number, locationIndex: number, sessionId: number }
 
-    
+
 export function sessionReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {
     switch (action.type) {
-        case "SWAP_SESSION":
+        case "SWAP_SESSION": {
             const fromTimeslot = state.timeslots[action.fromTimeslotIndex] as TimeslotWithSessions
             const fromSession = fromTimeslot.sessions[action.fromLocationIndex]
             const toTimeslot = state.timeslots[action.toTimeslotIndex] as TimeslotWithSessions
@@ -26,18 +26,21 @@ export function sessionReducer(state: Agenda = initialAgenda, action: ACTION): A
                 ...state,
                 timeslots
             }
+        }
 
-        case "CLEAR_SESSION":
+        case "CLEAR_SESSION": {
             return {
                 ...state,
                 timeslots: createTimeslotsWithChangedSession(state.timeslots, action.timeslotIndex, action.locationIndex, { id: null })
             }
+        }
 
-        case "SET_SESSION":
+        case "SET_SESSION": {
             return {
                 ...state,
                 timeslots: createTimeslotsWithChangedSession(state.timeslots, action.timeslotIndex, action.locationIndex, { id: action.sessionId })
             }
+        }
 
         default:
             return state

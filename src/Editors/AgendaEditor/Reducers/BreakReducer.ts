@@ -10,7 +10,7 @@ export type BREAK_ACTION =
 
 export function breakReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {
     switch (action.type) {
-        case "CHANGE_BREAK_TITLE":
+        case "CHANGE_BREAK_TITLE": {
             const timeslot = state.timeslots[action.timeslotIndex] as BreakTimeslot
             const replacement =
                 {
@@ -22,6 +22,7 @@ export function breakReducer(state: Agenda = initialAgenda, action: ACTION): Age
                 ...state,
                 timeslots: changeAtIndex(state.timeslots, action.timeslotIndex, replacement)
             }
+        }
 
         default:
             return state

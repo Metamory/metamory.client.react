@@ -13,7 +13,7 @@ export type LOCATION_ACTION =
 
 export function locationReducer(state: Agenda = initialAgenda, action: ACTION): Agenda {
 	switch (action.type) {
-		case "ADD_LOCATION":
+		case "ADD_LOCATION": {
 			const newLocation = {
 				id: state.locations.reduce(maxBy(location => location.id), 0) + 1,
 				name: "new location"
@@ -30,19 +30,20 @@ export function locationReducer(state: Agenda = initialAgenda, action: ACTION): 
 						: ts
 				)]
 			}
+		}
 
-		case "CHANGE_LOCATION_NAME":
+		case "CHANGE_LOCATION_NAME": {
 			const replacement = {
 				name: action.name,
 				id: state.locations[action.locationIndex]?.id
 			}
-
 			return {
 				...state,
 				locations: changeAtIndex(state.locations, action.locationIndex, replacement)
 			}
+		}
 
-		case "REMOVE_LOCATION":
+		case "REMOVE_LOCATION": {
 			return {
 				...state,
 				locations: removeAtIndex(state.locations, action.locationIndex),
@@ -59,6 +60,7 @@ export function locationReducer(state: Agenda = initialAgenda, action: ACTION): 
 					}
 				})]
 			}
+		}
 
 		default:
 			return state

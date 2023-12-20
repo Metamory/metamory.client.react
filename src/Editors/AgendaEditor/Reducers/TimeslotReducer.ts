@@ -73,19 +73,19 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
             }
         }
 
-        case "CHANGE_TIMESLOT_DURATION":{
+        case "CHANGE_TIMESLOT_DURATION": {
             const timeslotToChange = state.timeslots[action.timeslotIndex]
             const timeslots = changeAtIndex(state.timeslots, action.timeslotIndex, timeslot => ({
                 ...timeslot,
                 duration: action.duration
             }))
-        return {
+            return {
                 ...state,
                 timeslots: timeslots.map(recalculateFromAndTo(state.start, timeslots))
             }
-    }
+        }
 
-        case "REMOVE_TIMESLOT":{
+        case "REMOVE_TIMESLOT": {
             const timeslots = removeAtIndex(state.timeslots, action.timeslotIndex)
             return {
                 ...state,
@@ -93,7 +93,7 @@ export function timeslotReducer(state: Agenda = initialAgenda, action: ACTION): 
             }
         }
 
-        case "MOVE_TIMESLOT":{
+        case "MOVE_TIMESLOT": {
             const timeslots = moveInArray(state.timeslots, action.fromTimeslotIndex, action.toTimeslotIndex)
             return {
                 ...state,

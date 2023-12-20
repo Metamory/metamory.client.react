@@ -47,8 +47,6 @@ export const TimeslotRows = () => {
         rows = insertAtIndex(rows, dnd.dragStatus.currentIndex, { rowType: "drop-row", data, key: dnd.dragStatus.currentIndex })
     }
 
-    //TODO: recalculate displayed time.from and time.to while dragging
-
     const rowElements = rows.map((row, index) => {
         const timeslot = row.data!
         return (
