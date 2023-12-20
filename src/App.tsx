@@ -10,6 +10,7 @@ import { MarkdownEditor } from "./Editors/MarkdownEditor"
 import { ContentTypeSelector } from "./Metamory/ContentTypeSelector"
 import { AutoMimeTypeEditor } from "./Editors/AutoMimeTypeEditor"
 import { AgendaEditor } from "./Editors/AgendaEditor/AgendaEditor"
+import { TocEditor } from "./Editors/TocEditor/TocEditor"
 
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
 import IsAuthenticated from "./components/Auth/IsAuthenticated"
@@ -64,7 +65,7 @@ function App() {
 					</>
 				}
 				no={
-					<button onClick={() => loginWithRedirect({})}>Log in</button>
+					<button style={{ fontSize: "5em" }} onClick={() => loginWithRedirect({})}>Log in</button>
 				} />
 
 			<IsAuthenticated
@@ -83,7 +84,7 @@ function App() {
 						<ContentTypeSelector />
 						{/* <PlainTextEditor /> */}
 						{/* <MarkdownEditor /> */}
-						<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor]} fallbackEditor={PlainTextEditor} />
+						<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor ]} fallbackEditor={PlainTextEditor} />
 						<SaveButton />
 					</Metamory>
 				}

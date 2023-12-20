@@ -1,0 +1,125 @@
+
+div.toc-editor-container {
+	width: 400px;
+	display: grid;
+	grid-template-columns: 1fr min-content;
+	grid-template-areas: "editor content";
+	column-gap: 8px;
+}
+
+.toc-editor {
+	grid-area: editor;
+}
+
+.toc-editor table {
+	width: 100%;
+}
+
+.toc-editor div {
+	padding: 0;
+	margin: 0;
+}
+
+.toc-editor input {
+	font-size: 1em;
+	background-color: rgba(0%, 0%, 0%, .03);
+	border: none;
+	border-bottom: thin solid rgba(0%, 0%, 0%, .1);
+    width: 30ex;
+}
+
+.toc-editor [draggable] {
+	cursor: default;
+}
+
+.toc-editor .drop-area {
+	background-color: aliceblue;
+}
+
+.toc-editor thead tr,
+.toc-editor tfoot tr {
+	background-color: white;
+}
+
+.toc-editor tfoot tr td {
+	height: .5em;
+	border: none;
+}
+
+/* .toc-editor th .icons, */
+.toc-editor td .icons {
+	overflow-x: hidden;
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0;
+	width: 0;
+	height: 100%;
+	text-align: center;
+	font-weight: bold;
+	cursor: pointer;
+	color: transparent;
+	background-color: rgba(0%, 0%, 0%, .1);
+	transition: .5s;
+}
+
+/* .toc-editor th:hover .icons, */
+.toc-editor td:hover .icons {
+	color: black;
+	width: 22px;
+	transition: .2s;
+}
+
+.toc-editor tr.dragging.toc-item td:hover .icons {
+	display: none;
+	/* toc-item level drag and drop set .dragging at tr level */
+}
+
+/* .toc-editor th button, */
+.toc-editor td button {
+	border: none;
+	text-align: center;
+	font-size: 1em;
+	font-weight: bold;
+	background-color: transparent;
+}
+
+.toc-editor table {
+	overflow: hidden;
+	border-collapse: collapse;
+	margin-bottom: .5em;
+}
+
+.toc-editor .drop-area td,
+.toc-editor .toc-item td {
+	position: relative;
+	border: thin solid lightgray;
+	height: 31px;
+}
+
+.toc-editor tr.toc-item td input {
+	margin: 0 0.5em;
+	display: block;
+}
+
+.toc-editor .dragging.toc-item>td {
+    background-color: white;
+}
+
+/* --- */
+
+.toc-editor .empty-slot {
+	height: 100%;
+	padding: 4px;
+}
+
+.toc-editor .empty-slot div.frame {
+	height: calc(100% - 6px);
+	border: 3px dashed rgba(0%, 0%, 0%, .06);
+	border-radius: .5em;
+}
+
+.toc-editor-container {
+	padding: 4px 0 4px 4px;
+	overflow: scroll;
+}

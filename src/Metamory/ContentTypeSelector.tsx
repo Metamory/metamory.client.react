@@ -3,7 +3,13 @@ import { MetamoryContext } from "./Metamory"
 
 export const ContentTypeSelector = () => {
 	const metamoryContext = useContext(MetamoryContext)
-	const mimeTypes = ["text/plain", "text/markdown", "application/json", "application/agenda+json"]
+	const mimeTypes = [
+		"text/plain",
+		"text/markdown",
+		"application/json",
+		"application/agenda+json",
+		"application/table-of-contents+json"
+	]
 
 	return (
 		<div className="frame">
