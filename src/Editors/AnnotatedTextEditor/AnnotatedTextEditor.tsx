@@ -1,8 +1,10 @@
-import React, { useContext } from "react"
+import React, { useContext, useRef } from "react"
 import "./AnnotatedTextEditor.css"
 import { ACTION, annotatedTextReducer } from "./Reducers/AnnotatedTextReducer"
 import { useContentReducer } from "../../Metamory/useContentReducer"
 import { AnnotatedTextEditorContext, initialAnnotatedText } from "./AnnotatedTextEditorContext"
+import { Footnote, Segment, SplitPoint, segmentComparer } from "./Reducers/types"
+import classNames from "classnames"
 
 
 export const AnnotatedTextEditor = () => {
@@ -26,12 +28,75 @@ AnnotatedTextEditor.mimeType = "application/annotated-text+json"
 
 const AnnotatedTextEditorInner = () => {
 	const { dispatch, state } = useContext(AnnotatedTextEditorContext)
+	const textNode = useRef<HTMLParagraphElement>(null)
+
+	const clicked1 = () => {
+		// const selection = window.getSelection()
+		console.log("*** state", state)
+	}
+
+	const addFootnote = () => {
+		const selection = window.getSelection()
+		if (selection !== undefined
+			&& selection !== null
+			&& textNode.current?.contains(selection.anchorNode)
+			&& textNode.current?.contains(selection.focusNode)
+		) {
+			const fromSplitPoint = { segmentIndex: Number.parseInt(selection.anchorNode?.parentElement?.dataset.segmentIndex ?? ""), charPos: selection.anchorOffset }
+			const toSplitPoint = { segmentIndex: Number.parseInt(selection.focusNode?.parentElement?.dataset.segmentIndex ?? ""), charPos: selection.focusOffset }
+
+			const textToAnnotate = getTextBetweenSplitPoints(state.segments, fromSplitPoint, toSplitPoint)
+			dispatch({ type: "ADD_ANNOTATION_TO_ANNOTATED_TEXT", fromSplitPoint, toSplitPoint, text: `This is an annotation for "${textToAnnotate}"` })
+
+			//TODO: set the selection to the annotation
+		}
+	}
+
+	const onChange = () => {
+		dispatch({ type: "EDIT_ANNOTATED_TEXT", text: textNode.current?.textContent ?? "" })
+	}
+
+	const remove = (annotationIndex: number) => {
+		dispatch({ type: "REMOVE_ANNOTATION_FROM_ANNOTATED_TEXT", annotationIndex })
+	}
 
 	return (
 		<>
 			<div className="annotated-text-editor">
-				<h2>[This is AnnotatedTextEditorInner]</h2>
+				<p ref={textNode}>
+					{state.segments.map((segment, segmentIndex) => <span key={segmentIndex} className={classNames({"highlight": segment.annotationIds.length > 0})} data-segment-index={segmentIndex}>{segment.text}</span>)}
+				</p>
+				<ol>
+					{
+						state.annotations
+							.filter(annotation => annotation.type === "footnote")
+							.map(annotation => annotation as Footnote)
+							.map((footnote, ix) => <li key={ix}>{footnote.text} <button onClick={e => remove(ix)}>&times;</button></li>)
+					}
+				</ol>
+				<button onClick={e => clicked1()}>console.log("*** something")</button>
+				<br />
+				<button onClick={e => addFootnote()}>Add footnote</button>
 			</div>
 		</>
 	)
 }
+
+
+function getTextBetweenSplitPoints(segments: Array<Segment>, fromSplitPoint: SplitPoint, toSplitPoint: SplitPoint): string {
+    const [firstSplitPoint, lastSplitPoint] = [fromSplitPoint, toSplitPoint].sort(segmentComparer)
+
+	const firstSegment = segments[firstSplitPoint.segmentIndex]
+	const lastSegment = segments[lastSplitPoint.segmentIndex]
+
+	if (firstSplitPoint.segmentIndex === lastSplitPoint.segmentIndex) {
+		return firstSegment.text.slice(firstSplitPoint.charPos, lastSplitPoint.charPos)
+	} else {
+		return [
+			firstSegment.text.slice(firstSplitPoint.charPos),
+			...segments.slice(firstSplitPoint.segmentIndex+1, lastSplitPoint.segmentIndex).map(segment => segment.text),
+			lastSegment.text.slice(0, lastSplitPoint.charPos)
+		].join("")
+	}
+}
+

@@ -1,0 +1,9 @@
+[contentEditable=true] {
+    /* background-color: lightgrey; */
+    border: thin solid lightgray;
+    font-family: monospace;
+}
+
+.highlight {
+    background-color: pink;
+}
