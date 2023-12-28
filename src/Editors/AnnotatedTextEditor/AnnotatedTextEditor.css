@@ -7,3 +7,30 @@
 .highlight {
     background-color: pink;
 }
+
+.footnotes {
+    font-size: .8em;
+}
+
+button.linkbutton {
+    border: none;
+    padding: .1em;
+    font-size: 1em;
+    background-color: transparent;
+    color: blue;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &::before {
+        content: "[";
+        margin-right: .1em;
+    }
+
+    &::after {
+        content: "]";
+        margin-left: .1em;
+    }
+}

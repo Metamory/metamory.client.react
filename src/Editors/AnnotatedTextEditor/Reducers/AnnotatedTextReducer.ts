@@ -39,10 +39,12 @@ export function annotatedTextReducer(state: AnnotatedText = initialAnnotatedText
             const annotationIdToRemove = state.annotations[action.annotationIndex].id
             return {
                 ...state,
-                segments: state.segments.map(segment => ({
-                    ...segment,
-                    annotationIds: segment.annotationIds.filter(annotationId => annotationId !== annotationIdToRemove)
-                })),
+                segments: state.segments
+                    .map(segment => ({
+                        ...segment,
+                        annotationIds: segment.annotationIds.filter(annotationId => annotationId !== annotationIdToRemove)
+                    }))
+                    .reduce(compactSegments, []),
                 annotations: removeAtIndex(state.annotations, action.annotationIndex),
             }
         }
@@ -52,12 +54,43 @@ export function annotatedTextReducer(state: AnnotatedText = initialAnnotatedText
     }
 }
 
+function compactSegments(aggregatedSegments: Array<Segment>, currentSegment: Segment) {
+    if (currentSegment.text.length === 0) {
+        return aggregatedSegments
+    }
 
+    if (aggregatedSegments.length > 0
+        && compareArrays(aggregatedSegments[aggregatedSegments.length - 1].annotationIds, currentSegment.annotationIds)) {
+        aggregatedSegments[aggregatedSegments.length - 1].text = aggregatedSegments[aggregatedSegments.length - 1].text + currentSegment.text
+        return aggregatedSegments
+    }
 
+    aggregatedSegments.push(currentSegment)
+    return aggregatedSegments
+}
+
+function compareArrays<T>(a: Array<T>, b: Array<T>) {
+    if (a.length !== b.length) {
+        return false
+    }
+
+    const bCopy = [...b]
+    for (let i = 0; i < a.length; i++) {
+        const removed = bCopy.splice(bCopy.indexOf(a[i]), 1)
+        if (removed.length === 0) {
+            return false
+        }
+    }
+    if(bCopy.length > 0) {
+        return false
+    }
+
+    return true
+}
 
 function annotate(segments: Segment[], fromSplitPoint: SplitPoint, toSplitPoint: SplitPoint, annotationId: number) {
     const [firstSplitPoint, lastSplitPoint] = [fromSplitPoint, toSplitPoint].sort(segmentComparer)
-    
+
     const retArray = [...segments.map(segment => ({ ...segment }))]
 
     if (firstSplitPoint.segmentIndex === lastSplitPoint.segmentIndex) {
