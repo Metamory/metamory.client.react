@@ -5,6 +5,7 @@ import { useContentReducer } from "../../Metamory/useContentReducer"
 import { AnnotatedTextEditorContext, initialAnnotatedText } from "./AnnotatedTextEditorContext"
 import { Footnote, Segment, SplitPoint, segmentComparer } from "./Reducers/types"
 import classNames from "classnames"
+import ReactMarkdown from "react-markdown"
 
 
 export const AnnotatedTextEditor = () => {
@@ -101,13 +102,26 @@ const AnnotatedTextEditorInner = () => {
 			.join("\n")
 	}
 
+// SUGGESTION:
+// - have contentEditable on the <p> element ONLY when navigating using arrow keys, or selection use arrow keys or mouse
+// - have only contentEditable on all <span> elements when typing
+//   - this makes ENTER into "inline" <br/> instead of a <div> element after the <span> element
+// - contenteditable="plaintext-only" doesn't seem to work in react...
+// ALT SUGGESTION:
+// - can I filter out or reformat as the user is typing or pasting, or formatting?
+// ALT SUGGESTION:
+// - Monaco editor? https://github.com/microsoft/monaco-editor
+//   - Monarch?
+//   - Build a custom model for combination of markdown, mermaid, annotated text etc.?
+
 	return (
 		<>
 			<div className="annotated-text-editor">
-				<p ref={textNode}>
+				<p ref={textNode} contentEditable={false}>
 					{
 						state.segments.map((segment, segmentIndex) =>
 							<span key={segmentIndex}
+								contentEditable={true}
 								className={classNames({ "segment": true, "highlight": segment.annotationIds.length > 0 })}
 								title={getFootnotes(segment.annotationIds)}
 								data-segment-index={segmentIndex}
@@ -116,6 +130,7 @@ const AnnotatedTextEditorInner = () => {
 							</span>
 						)}
 				</p>
+				{/* <ReactMarkdown>{state.segments.map(segment => segment.text).join("")}</ReactMarkdown> */}
 				<ol className="footnotes">
 					{
 						state.annotations

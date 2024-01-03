@@ -74,7 +74,9 @@ function App() {
 					<Metamory
 						serviceBaseUrl=""
 						siteName="first-site"
-						contentId="agenda"
+						contentId="annotatedText2"
+						// contentId="agenda"
+						// contentId="toc"
 						// contentId="frontpage"
 						currentUser={user?.name ?? "n/a"}
 						authHeaders={authHeaders}

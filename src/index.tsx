@@ -11,7 +11,8 @@ import IsAuthenticated from './components/Auth/IsAuthenticated'
 const root = createRoot(document.getElementById('root')!)
 
 const onRedirectCallback = (appState: any) => {
-	console.log("*** history.push", { appState, location: window.location })
+	// console.log("*** history.push", { appState, location: window.location })
+	
 	// history.push(
 	//   appState && appState.returnTo ? appState.returnTo : window.location.pathname
 	// )
