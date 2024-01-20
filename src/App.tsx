@@ -87,7 +87,8 @@ function App() {
 						<ContentTypeSelector />
 						{/* <PlainTextEditor /> */}
 						{/* <MarkdownEditor /> */}
-						<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor, AnnotatedTextEditor]} fallbackEditor={PlainTextEditor} />
+						<AnnotatedTextEditor />
+						{/* <AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor, AnnotatedTextEditor]} fallbackEditor={PlainTextEditor} /> */}
 						<SaveButton />
 					</Metamory>
 				}
