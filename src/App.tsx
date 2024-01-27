@@ -66,7 +66,9 @@ function App() {
 					</>
 				}
 				no={
-					<button style={{ fontSize: "5em" }} onClick={() => loginWithRedirect({})}>Log in</button>
+					<div style={{height: "100vh", display: "flex", alignItems: "center", justifyContent: "center"}}>
+						<button style={{ fontSize: "5em" }} onClick={() => loginWithRedirect({})}>Log in</button>
+					</div>
 				} />
 
 			<IsAuthenticated
@@ -74,10 +76,7 @@ function App() {
 					<Metamory
 						serviceBaseUrl=""
 						siteName="first-site"
-						contentId="annotatedText2"
-						// contentId="agenda"
-						// contentId="toc"
-						// contentId="frontpage"
+						contentId="frontpage"
 						currentUser={user?.name ?? "n/a"}
 						authHeaders={authHeaders}
 					>
@@ -85,8 +84,8 @@ function App() {
 						<VersionSelector />
 						<PublishButton />
 						<ContentTypeSelector />
-						{/* <PlainTextEditor /> */}
-						{/* <MarkdownEditor /> */}
+						<PlainTextEditor />
+						<MarkdownEditor />
 						<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor, AnnotatedTextEditor]} fallbackEditor={PlainTextEditor} />
 						<SaveButton />
 					</Metamory>
