@@ -27,12 +27,11 @@ type MetamoryProps = {
 	contentId: string
 	currentUser: string
 	authHeaders: any,
-	noAuthHeaders: any,
 	children?: React.ReactNode
 }
 
 
-export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, noAuthHeaders, children, ...props }: MetamoryProps) => {
+export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, children, ...props }: MetamoryProps) => {
 	const [state, dispatch] = useReducer(reducer, { ...initialState, contentId: props.contentId })
 
 	useEffect(() => {
@@ -42,7 +41,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			return
 		}
 
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}?${new URLSearchParams(noAuthHeaders)}`,
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`,
 			{
 				/*mode: "cors"*/
 				headers: {
@@ -72,9 +71,12 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 
 	useEffect(() => {
 		// load versions
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions?${new URLSearchParams(noAuthHeaders)}`,
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions`,
 			{
 				/*mode: "cors"*/
+				headers: {
+					...authHeaders
+				}
 			})
 			.then((response) => response.json())
 			.then((data) => {
@@ -99,7 +101,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			contentType: state.draft?.contentType,
 			author: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}?${new URLSearchParams(noAuthHeaders)}`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}`, {
 			method: "POST",
 			// mode: "cors",
 			cache: "no-cache",
@@ -121,7 +123,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			startDate, // ISO 8601 date/time for publication
 			responsible: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status?${new URLSearchParams(noAuthHeaders)}`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status`, {
 			method: "POST",
 			// mode: "cors",
 			cache: "no-cache",
