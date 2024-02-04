@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer } from "react"
 import { reducer, initialState, DRAFT, Version, _setContentReducer } from "./MetamoryReducer"
 import { reducerFn } from "./useContentReducer"
-import { useAuth0 } from "@auth0/auth0-react"
 
 const defaultMetamoryContext = {
 	contentId: "",
@@ -28,12 +27,13 @@ type MetamoryProps = {
 	contentId: string
 	currentUser: string
 	authHeaders: any,
+	noAuthHeaders: any,
 	children?: React.ReactNode
 }
 
-export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, children, ...props }: MetamoryProps) => {
+
+export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, noAuthHeaders, children, ...props }: MetamoryProps) => {
 	const [state, dispatch] = useReducer(reducer, { ...initialState, contentId: props.contentId })
-	const { getAccessTokenSilently, } = useAuth0()
 
 	useEffect(() => {
 		// load content
@@ -42,7 +42,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, c
 			return
 		}
 
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`,
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}?${new URLSearchParams(noAuthHeaders)}`,
 			{
 				/*mode: "cors"*/
 				headers: {
@@ -72,18 +72,10 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, c
 
 	useEffect(() => {
 		// load versions
-
-		getAccessTokenSilently()
-			.then(token => ({
-				Authorization: `Bearer ${token}`,
-			}))
-			.then(authHeaders => fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions`,
-				{
-					/*mode: "cors"*/
-					headers: {
-						...authHeaders
-					}
-				}))
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions?${new URLSearchParams(noAuthHeaders)}`,
+			{
+				/*mode: "cors"*/
+			})
 			.then((response) => response.json())
 			.then((data) => {
 				dispatch({
@@ -92,7 +84,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, c
 					publishedVersionId: data.publishedVersionId
 				})
 			})
-			// .catch(err => console.log("*** err", err))
+		// .catch(err => console.log("*** err", err))
 	}, [serviceBaseUrl, siteName, state.contentId])
 
 	const load = (contentId: string) => {
@@ -107,7 +99,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, c
 			contentType: state.draft?.contentType,
 			author: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}?${new URLSearchParams(noAuthHeaders)}`, {
 			method: "POST",
 			// mode: "cors",
 			cache: "no-cache",
@@ -129,7 +121,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, c
 			startDate, // ISO 8601 date/time for publication
 			responsible: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status?${new URLSearchParams(noAuthHeaders)}`, {
 			method: "POST",
 			// mode: "cors",
 			cache: "no-cache",
