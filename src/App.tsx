@@ -19,88 +19,36 @@ import IsAuthenticated from "./components/Auth/IsAuthenticated"
 type AuthHeaders = {
 	Authorization: string
 }
+type RoleHeaders = {
+	role: string
+}
 
 
 function App() {
-	const {
-		user,
-		isAuthenticated,
-		loginWithRedirect,
-		getAccessTokenSilently,
-		logout,
-	} = useAuth0()
-
-	const [authHeaders, setAuthHeaders] = useState<AuthHeaders>()
-	useEffect(() => {
-		if (isAuthenticated) {
-			getAccessTokenSilently({
-				authorizationParams: {
-					audience: `https://metamory.server/`,
-					// scope: "openid",
-				},
-			}).then((token) => {
-				setAuthHeaders({
-					Authorization: `Bearer ${token}`,
-				})
-			})
-		}
-		else {
-			setAuthHeaders(undefined)
-		}
-	}, [isAuthenticated])
-
-	const logoutWithRedirect = () =>
-		logout({
-			logoutParams: {
-				returnTo: window.location.origin,
-			}
-		})
+	const user = {name: "Joe Q. Editor"}
+	const [authHeaders, setAuthHeaders] = useState<AuthHeaders|RoleHeaders>({role: "editor"})
+	const noAuthHeaders = {role: "editor"}
 
 	return (
 		<div className="App">
-			<IsAuthenticated
-				yes={
-					<>
-						You are logged in as {user?.name} ({user?.email}).
-						<button onClick={() => logoutWithRedirect()}>Log out</button>
-					</>
-				}
-				no={
-					<div style={{height: "100vh", display: "flex", alignItems: "center", justifyContent: "center"}}>
-						<button style={{ fontSize: "5em" }} onClick={() => loginWithRedirect({})}>Log in</button>
-					</div>
-				} />
-
-			<IsAuthenticated
-				yes={
-					<Metamory
-						serviceBaseUrl=""
-						siteName="first-site"
-						contentId="test"
-						currentUser={user?.name ?? "n/a"}
-						authHeaders={authHeaders}
-						noAuthHeaders={undefined}
-					>
-						<ContentIdSelector />
-						<VersionSelector />
-						<PublishButton />
-						<ContentTypeSelector />
-						<PlainTextEditor />
-						<MarkdownEditor />
-						<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor, AnnotatedTextEditor]} fallbackEditor={PlainTextEditor} />
-						<SaveButton />
-					</Metamory>
-				}
-			/>
-
+			<Metamory
+				serviceBaseUrl=""
+				siteName="first-site"
+				contentId="test"
+				currentUser={user?.name ?? "n/a"}
+				authHeaders={undefined}
+				noAuthHeaders={noAuthHeaders}
+			>
+				<ContentIdSelector />
+				<VersionSelector />
+				<PublishButton />
+				<ContentTypeSelector />
+				<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor, AnnotatedTextEditor]} fallbackEditor={PlainTextEditor} />
+				<SaveButton />
+			</Metamory>
 		</div>
 	)
 }
 
 
 export default App
-
-
-// export default withAuthenticationRequired(App, {
-// 	onRedirecting: () => <h1>L...O...A...D...I..N...G<br />A...U...T...H...0</h1>,
-// })

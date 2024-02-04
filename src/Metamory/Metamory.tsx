@@ -42,11 +42,12 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			return
 		}
 
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}?${new URLSearchParams(noAuthHeaders)}`,
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${state.currentVersionId}`,
 			{
 				/*mode: "cors"*/
 				headers: {
-					...authHeaders
+					...authHeaders,
+					...noAuthHeaders
 				}
 			})
 			.then((response) => {
@@ -77,10 +78,11 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			{
 				method: "GET",
 				cache: "no-cache",
-				headers: {
-					...authHeaders
-				}
 				/*mode: "cors"*/
+				headers: {
+					...authHeaders,
+					...noAuthHeaders
+				}
 			})
 			.then((response) => response.status == 200 ? response.json() : Promise.reject(response))
 			.then((data) => {
@@ -105,13 +107,14 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			contentType: state.draft?.contentType,
 			author: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}?${new URLSearchParams(noAuthHeaders)}`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}`, {
 			method: "POST",
 			// mode: "cors",
 			cache: "no-cache",
 			headers: {
 				"Content-Type": "application/json",
-				...authHeaders
+				...authHeaders,
+				...noAuthHeaders
 			},
 			body: JSON.stringify(body)
 		})
@@ -127,13 +130,14 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			startDate, // ISO 8601 date/time for publication
 			responsible: currentUser
 		}
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status?${new URLSearchParams(noAuthHeaders)}`, {
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/${versionId}/status`, {
 			method: "POST",
 			// mode: "cors",
 			cache: "no-cache",
 			headers: {
 				"Content-Type": "application/json",
-				...authHeaders
+				...authHeaders,
+				...noAuthHeaders
 			},
 			body: JSON.stringify(body)
 		})
