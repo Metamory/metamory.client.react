@@ -13,6 +13,9 @@ import { AgendaEditor } from "./Editors/AgendaEditor/AgendaEditor"
 import { TocEditor } from "./Editors/TocEditor/TocEditor"
 import { AnnotatedTextEditor } from "./Editors/AnnotatedTextEditor/AnnotatedTextEditor"
 
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
+import IsAuthenticated from "./components/Auth/IsAuthenticated"
+
 type AuthHeaders = {
 	Authorization: string
 }
@@ -22,28 +25,82 @@ type RoleHeaders = {
 
 
 function App() {
-	const user = {name: "Joe Q. Editor"}
-	const [authHeaders, setAuthHeaders] = useState<AuthHeaders|RoleHeaders>({role: "editor"})
+	const {
+		user,
+		isAuthenticated,
+		loginWithRedirect,
+		getAccessTokenSilently,
+		logout,
+	} = useAuth0()
+	const [authHeaders, setAuthHeaders] = useState<AuthHeaders | RoleHeaders>()
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			getAccessTokenSilently({
+				authorizationParams: {
+					audience: `https://metamory.server/`,
+					// scope: "openid",
+				},
+			}).then((token) => {
+				setAuthHeaders({
+					Authorization: `Bearer ${token}`,
+				})
+			})
+		}
+		else {
+			setAuthHeaders(undefined)
+		}
+	}, [isAuthenticated])
+
+	const logoutWithRedirect = () =>
+		logout({
+			logoutParams: {
+				returnTo: window.location.origin,
+			}
+		})
 
 	return (
 		<div className="App">
-			<Metamory
-				serviceBaseUrl=""
-				siteName="first-site"
-				contentId="test"
-				currentUser={user?.name ?? "n/a"}
-				authHeaders={authHeaders}
-			>
-				<ContentIdSelector />
-				<VersionSelector />
-				<PublishButton />
-				<ContentTypeSelector />
-				<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor, AnnotatedTextEditor]} fallbackEditor={PlainTextEditor} />
-				<SaveButton />
-			</Metamory>
+			<IsAuthenticated
+				yes={
+					<>
+						You are logged in as {user?.name} ({user?.email}).
+						<button onClick={() => logoutWithRedirect()}>Log out</button>
+					</>
+				}
+				no={
+					<div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+						<button style={{ fontSize: "5em" }} onClick={() => loginWithRedirect({})}>Log in</button>
+					</div>
+				} />
+
+<IsAuthenticated
+				yes={
+					<Metamory
+						serviceBaseUrl=""
+						siteName="first-site"
+						contentId="test"
+						currentUser={user?.name ?? "n/a"}
+						authHeaders={authHeaders}
+					>
+						<ContentIdSelector />
+						<VersionSelector />
+						<PublishButton />
+						<ContentTypeSelector />
+						<AutoMimeTypeEditor editors={[PlainTextEditor, MarkdownEditor, AgendaEditor, TocEditor, AnnotatedTextEditor]} fallbackEditor={PlainTextEditor} />
+						<SaveButton />
+					</Metamory>
+				}
+			/>
+			
 		</div>
 	)
 }
 
 
 export default App
+
+//// Export this as default if the site has no fallback for when it is used without authentication
+// export default withAuthenticationRequired(App, {
+// 	onRedirecting: () => <h1>L...O...A...D...I..N...G<br />A...U...T...H...0</h1>,
+// })
