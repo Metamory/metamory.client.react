@@ -72,11 +72,17 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 
 	useEffect(() => {
 		// load versions
+
 		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions?${new URLSearchParams(noAuthHeaders)}`,
 			{
+				method: "GET",
+				cache: "no-cache",
+				headers: {
+					...authHeaders
+				}
 				/*mode: "cors"*/
 			})
-			.then((response) => response.json())
+			.then((response) => response.status == 200 ? response.json() : Promise.reject(response))
 			.then((data) => {
 				dispatch({
 					type: "VERSIONS_LOADED",
@@ -84,8 +90,8 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 					publishedVersionId: data.publishedVersionId
 				})
 			})
-		// .catch(err => console.log("*** err", err))
-	}, [serviceBaseUrl, siteName, state.contentId])
+			.catch(err => console.error("*** err", err))
+	}, [serviceBaseUrl, siteName, state.contentId, authHeaders])
 
 	const load = (contentId: string) => {
 		dispatch({ type: "LOADING", contentId })

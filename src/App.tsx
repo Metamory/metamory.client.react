@@ -76,9 +76,10 @@ function App() {
 					<Metamory
 						serviceBaseUrl=""
 						siteName="first-site"
-						contentId="frontpage"
+						contentId="test"
 						currentUser={user?.name ?? "n/a"}
 						authHeaders={authHeaders}
+						noAuthHeaders={undefined}
 					>
 						<ContentIdSelector />
 						<VersionSelector />
