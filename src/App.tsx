@@ -13,9 +13,6 @@ import { AgendaEditor } from "./Editors/AgendaEditor/AgendaEditor"
 import { TocEditor } from "./Editors/TocEditor/TocEditor"
 import { AnnotatedTextEditor } from "./Editors/AnnotatedTextEditor/AnnotatedTextEditor"
 
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
-import IsAuthenticated from "./components/Auth/IsAuthenticated"
-
 type AuthHeaders = {
 	Authorization: string
 }
