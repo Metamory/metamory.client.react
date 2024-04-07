@@ -27,7 +27,6 @@ type RoleHeaders = {
 function App() {
 	const user = {name: "Joe Q. Editor"}
 	const [authHeaders, setAuthHeaders] = useState<AuthHeaders|RoleHeaders>({role: "editor"})
-	const noAuthHeaders = {role: "editor"}
 
 	return (
 		<div className="App">
@@ -36,8 +35,7 @@ function App() {
 				siteName="first-site"
 				contentId="test"
 				currentUser={user?.name ?? "n/a"}
-				authHeaders={undefined}
-				noAuthHeaders={noAuthHeaders}
+				authHeaders={authHeaders}
 			>
 				<ContentIdSelector />
 				<VersionSelector />

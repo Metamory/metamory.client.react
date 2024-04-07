@@ -27,12 +27,11 @@ type MetamoryProps = {
 	contentId: string
 	currentUser: string
 	authHeaders: any,
-	noAuthHeaders: any,
 	children?: React.ReactNode
 }
 
 
-export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, noAuthHeaders, children, ...props }: MetamoryProps) => {
+export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, children, ...props }: MetamoryProps) => {
 	const [state, dispatch] = useReducer(reducer, { ...initialState, contentId: props.contentId })
 
 	useEffect(() => {
@@ -46,8 +45,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			{
 				/*mode: "cors"*/
 				headers: {
-					...authHeaders,
-					...noAuthHeaders
+					...authHeaders
 				}
 			})
 			.then((response) => {
@@ -74,14 +72,13 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 	useEffect(() => {
 		// load versions
 
-		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions?${new URLSearchParams(noAuthHeaders)}`,
+		fetch(`${serviceBaseUrl}/content/${siteName}/${state.contentId}/versions`,
 			{
 				method: "GET",
 				cache: "no-cache",
 				/*mode: "cors"*/
 				headers: {
-					...authHeaders,
-					...noAuthHeaders
+					...authHeaders
 				}
 			})
 			.then((response) => response.status == 200 ? response.json() : Promise.reject(response))
@@ -113,8 +110,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			cache: "no-cache",
 			headers: {
 				"Content-Type": "application/json",
-				...authHeaders,
-				...noAuthHeaders
+				...authHeaders
 			},
 			body: JSON.stringify(body)
 		})
@@ -136,8 +132,7 @@ export const Metamory = ({ serviceBaseUrl, siteName, currentUser, authHeaders, n
 			cache: "no-cache",
 			headers: {
 				"Content-Type": "application/json",
-				...authHeaders,
-				...noAuthHeaders
+				...authHeaders
 			},
 			body: JSON.stringify(body)
 		})
